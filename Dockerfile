@@ -10,8 +10,6 @@ RUN npm run build:prod
 
 FROM microsoft/dotnet:2.2-aspnetcore-runtime AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
 
 FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /src
@@ -28,4 +26,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
 COPY --from=nodepage /usr/src/wwwroot ./wwwroot
+
+EXPOSE 5000
+
 ENTRYPOINT ["dotnet", "dotnet-core-element-admin.dll"]
