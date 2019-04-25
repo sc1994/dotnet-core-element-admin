@@ -7,5 +7,5 @@
 */bin
 */obj
 **/.toolstarget
-paegs/node_modules
+pages/node_modules
 wwwroot

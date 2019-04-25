@@ -17,8 +17,12 @@ namespace dotnet_core_element_admin
             CreateWebHostBuilder(args).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args)
+                .UseUrls("http://*:5000")
                 .UseStartup<Startup>();
+        }
+
     }
 }
