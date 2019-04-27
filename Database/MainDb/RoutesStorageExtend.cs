@@ -1,5 +1,5 @@
 // =============系统自动生成=============
-// 时间：2019/4/27 10:00
+// 时间：2019/4/27 15:31
 // 备注：简单的数据库操作方法，以及声明表结构。请勿在此文件中变动代码。
 // =============系统自动生成=============
 
@@ -53,6 +53,18 @@ namespace Database.MainDb
 
             if (defaultModel.Id != predicate.Id)
                 search = x => x.Id == predicate.Id;
+            if (defaultModel.parentId != predicate.parentId)
+            {
+                if (search == null)
+                    search = x => x.parentId == predicate.parentId;
+                else search = search.And(x => x.parentId == predicate.parentId);
+            }
+            if (defaultModel.Name != predicate.Name)
+            {
+                if (search == null)
+                    search = x => x.Name == predicate.Name;
+                else search = search.And(x => x.Name == predicate.Name);
+            }
             if (defaultModel.Path != predicate.Path)
             {
                 if (search == null)
@@ -65,23 +77,41 @@ namespace Database.MainDb
                     search = x => x.Component == predicate.Component;
                 else search = search.And(x => x.Component == predicate.Component);
             }
-            if (defaultModel.Hidden != predicate.Hidden)
+            if (defaultModel.HiddenInt != predicate.HiddenInt)
             {
                 if (search == null)
-                    search = x => x.Hidden == predicate.Hidden;
-                else search = search.And(x => x.Hidden == predicate.Hidden);
+                    search = x => x.HiddenInt == predicate.HiddenInt;
+                else search = search.And(x => x.HiddenInt == predicate.HiddenInt);
             }
-            if (defaultModel.RoleKey != predicate.RoleKey)
+            if (defaultModel.Redirect != predicate.Redirect)
             {
                 if (search == null)
-                    search = x => x.RoleKey == predicate.RoleKey;
-                else search = search.And(x => x.RoleKey == predicate.RoleKey);
+                    search = x => x.Redirect == predicate.Redirect;
+                else search = search.And(x => x.Redirect == predicate.Redirect);
             }
-            if (defaultModel.RouteId != predicate.RouteId)
+            if (defaultModel.Roles != predicate.Roles)
             {
                 if (search == null)
-                    search = x => x.RouteId == predicate.RouteId;
-                else search = search.And(x => x.RouteId == predicate.RouteId);
+                    search = x => x.Roles == predicate.Roles;
+                else search = search.And(x => x.Roles == predicate.Roles);
+            }
+            if (defaultModel.Title != predicate.Title)
+            {
+                if (search == null)
+                    search = x => x.Title == predicate.Title;
+                else search = search.And(x => x.Title == predicate.Title);
+            }
+            if (defaultModel.Icon != predicate.Icon)
+            {
+                if (search == null)
+                    search = x => x.Icon == predicate.Icon;
+                else search = search.And(x => x.Icon == predicate.Icon);
+            }
+            if (defaultModel.BreadcrumbInt != predicate.BreadcrumbInt)
+            {
+                if (search == null)
+                    search = x => x.BreadcrumbInt == predicate.BreadcrumbInt;
+                else search = search.And(x => x.BreadcrumbInt == predicate.BreadcrumbInt);
             }
             if (search == null)
                 search = x => x.Id.ToString() != ""; // 添加默认条件，不推荐，务必在查询时加上条件
@@ -108,6 +138,14 @@ namespace Database.MainDb
                       .HasColumnName("Id")
                       .HasColumnType("int(11)");
 
+                entity.Property(e => e.parentId)
+                      .HasColumnName("parentId")
+                      .HasColumnType("int(11)");
+
+                entity.Property(e => e.Name)
+                      .HasColumnName("Name")
+                      .HasColumnType("varchar(255)");
+
                 entity.Property(e => e.Path)
                       .HasColumnName("Path")
                       .HasColumnType("varchar(255)");
@@ -116,17 +154,29 @@ namespace Database.MainDb
                       .HasColumnName("Component")
                       .HasColumnType("varchar(255)");
 
-                entity.Property(e => e.Hidden)
-                      .HasColumnName("Hidden")
+                entity.Property(e => e.HiddenInt)
+                      .HasColumnName("HiddenInt")
+                      .HasColumnType("tinyint(1)");
+
+                entity.Property(e => e.Redirect)
+                      .HasColumnName("Redirect")
                       .HasColumnType("varchar(255)");
 
-                entity.Property(e => e.RoleKey)
-                      .HasColumnName("RoleKey")
+                entity.Property(e => e.Roles)
+                      .HasColumnName("Roles")
                       .HasColumnType("varchar(255)");
 
-                entity.Property(e => e.RouteId)
-                      .HasColumnName("RouteId")
-                      .HasColumnType("int(11)");
+                entity.Property(e => e.Title)
+                      .HasColumnName("Title")
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.Icon)
+                      .HasColumnName("Icon")
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.BreadcrumbInt)
+                      .HasColumnName("BreadcrumbInt")
+                      .HasColumnType("tinyint(1)");
             });
         }
     }

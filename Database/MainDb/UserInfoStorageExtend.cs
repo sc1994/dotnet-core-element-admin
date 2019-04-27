@@ -1,5 +1,5 @@
 // =============系统自动生成=============
-// 时间：2019/4/27 10:00
+// 时间：2019/4/27 10:45
 // 备注：简单的数据库操作方法，以及声明表结构。请勿在此文件中变动代码。
 // =============系统自动生成=============
 
@@ -83,6 +83,18 @@ namespace Database.MainDb
                     search = x => x.Name == predicate.Name;
                 else search = search.And(x => x.Name == predicate.Name);
             }
+            if (defaultModel.Username != predicate.Username)
+            {
+                if (search == null)
+                    search = x => x.Username == predicate.Username;
+                else search = search.And(x => x.Username == predicate.Username);
+            }
+            if (defaultModel.Password != predicate.Password)
+            {
+                if (search == null)
+                    search = x => x.Password == predicate.Password;
+                else search = search.And(x => x.Password == predicate.Password);
+            }
             if (search == null)
                 search = x => x.Id.ToString() != ""; // 添加默认条件，不推荐，务必在查询时加上条件
 
@@ -126,6 +138,14 @@ namespace Database.MainDb
 
                 entity.Property(e => e.Name)
                       .HasColumnName("Name")
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.Username)
+                      .HasColumnName("Username")
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.Password)
+                      .HasColumnName("Password")
                       .HasColumnType("varchar(255)");
             });
         }

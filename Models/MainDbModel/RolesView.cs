@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Models.MainDb;
 
 namespace Models.MainDbModel
 {
-    class RolesView
+    public class RolesView : RolesModel
     {
+        public RoutesViews[] Routes { get; set; }
     }
 }

@@ -5,12 +5,12 @@ namespace Models
     public class ResultModel
     {
         public int Code { get; set; }
-        public string Data { get; set; }
+        public string Message { get; set; }
     }
 
     public class ResultModel<T> : ResultModel
     {
-        public new T Data { get; set; }
+        public T Data { get; set; }
     }
 
     public class PageModel<T>

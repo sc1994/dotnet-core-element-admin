@@ -9,7 +9,7 @@ namespace Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class ArticleController
+    public class ArticleController 
     {
         [HttpGet("list")]
         public ResultModel<PageModel<ArticleModel>> ArticleList(int page, int limit)
