@@ -11,8 +11,12 @@ namespace Services.MainDb
     /// <summary>服务</summary>
     public class TransactionService : BaseService<TransactionModel>, ITransactionService
     {
+        private readonly ITransactionStorage _storage;
+
         /// <summary>服务</summary>
         public TransactionService(ITransactionStorage storage) : base(storage)
-        { }
+        {
+            _storage = storage;
+        }
     }
 }

@@ -12,11 +12,11 @@ namespace Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class UserExtend : ControllerBaseExtend
+    public class UserController : ControllerBaseExtend
     {
         private readonly IUserInfoStorage _userInfo;
 
-        public UserExtend(IUserInfoStorage userInfo)
+        public UserController(IUserInfoStorage userInfo)
         {
             _userInfo = userInfo;
             if (_userInfo.FirstOrDefaultAsync(x => x.Username == "admin").Result == default)

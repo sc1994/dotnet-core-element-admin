@@ -26,6 +26,7 @@ namespace Database.MainDb
             OnModelCreatingRoutes(modelBuilder); // 
             OnModelCreatingTransaction(modelBuilder); // 
             OnModelCreatingUserInfo(modelBuilder); // 
+            OnModelCreatingRoleRoute(modelBuilder); // 
         }
     }
 }

@@ -10,16 +10,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Models.MainDb
 {
     /// <summary></summary>
-    [Table("Roles")]
-    public class RolesModel
+    [Table("RoleRoute")]
+    public class RoleRouteModel
     {
-        /// <summary>角色</summary>
-        public string Key { get; set; }
+        /// <summary>主键</summary>
+        public int Id { get; set; }
 
-        /// <summary>名称</summary>
-        public string Name { get; set; }
+        /// <summary>角色Id</summary>
+        public int RoleId { get; set; }
 
-        /// <summary>描述</summary>
-        public string Description { get; set; }
+        /// <summary>路由Id</summary>
+        public int RouteId { get; set; }
     }
 }

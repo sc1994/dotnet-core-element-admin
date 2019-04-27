@@ -3,9 +3,9 @@ using Models.MainDb;
 
 namespace Models.MainDbModel
 {
-    public class RoutesViews : RoutesModel
+    public class RoutesView : RoutesModel
     {
-        public List<RoutesViews> Children { get; set; }
+        public List<RoutesView> Children { get; set; }
 
         /// <summary>当设置 true 的时候该路由不会再侧边栏出现</summary>
         public bool Hidden => HiddenInt == 1;

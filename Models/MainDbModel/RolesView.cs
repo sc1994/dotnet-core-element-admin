@@ -1,9 +1,10 @@
-﻿using Models.MainDb;
+﻿using System.Collections.Generic;
+using Models.MainDb;
 
 namespace Models.MainDbModel
 {
     public class RolesView : RolesModel
     {
-        public RoutesViews[] Routes { get; set; }
+        public List<RoutesView> Routes { get; set; }
     }
 }

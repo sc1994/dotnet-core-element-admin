@@ -11,8 +11,12 @@ namespace Services.MainDb
     /// <summary>服务</summary>
     public class UserInfoService : BaseService<UserInfoModel>, IUserInfoService
     {
+        private readonly IUserInfoStorage _storage;
+
         /// <summary>服务</summary>
         public UserInfoService(IUserInfoStorage storage) : base(storage)
-        { }
+        {
+            _storage = storage;
+        }
     }
 }

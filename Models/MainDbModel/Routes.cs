@@ -1,5 +1,5 @@
 // =============系统自动生成=============
-// 时间：2019/4/27 15:31
+// 时间：2019/4/27 16:16
 // 备注：表字段对应的数据模型。请勿在此文件中变动代码。
 // =============系统自动生成=============
 // ReSharper disable InconsistentNaming
@@ -17,7 +17,7 @@ namespace Models.MainDb
         public int Id { get; set; }
 
         /// <summary>父级Id</summary>
-        public int parentId { get; set; }
+        public int ParentId { get; set; }
 
         /// <summary>名称</summary>
         public string Name { get; set; }

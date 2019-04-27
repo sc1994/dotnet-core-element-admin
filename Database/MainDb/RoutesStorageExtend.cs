@@ -1,5 +1,5 @@
 // =============系统自动生成=============
-// 时间：2019/4/27 15:31
+// 时间：2019/4/27 16:16
 // 备注：简单的数据库操作方法，以及声明表结构。请勿在此文件中变动代码。
 // =============系统自动生成=============
 
@@ -53,11 +53,11 @@ namespace Database.MainDb
 
             if (defaultModel.Id != predicate.Id)
                 search = x => x.Id == predicate.Id;
-            if (defaultModel.parentId != predicate.parentId)
+            if (defaultModel.ParentId != predicate.ParentId)
             {
                 if (search == null)
-                    search = x => x.parentId == predicate.parentId;
-                else search = search.And(x => x.parentId == predicate.parentId);
+                    search = x => x.ParentId == predicate.ParentId;
+                else search = search.And(x => x.ParentId == predicate.ParentId);
             }
             if (defaultModel.Name != predicate.Name)
             {
@@ -138,8 +138,8 @@ namespace Database.MainDb
                       .HasColumnName("Id")
                       .HasColumnType("int(11)");
 
-                entity.Property(e => e.parentId)
-                      .HasColumnName("parentId")
+                entity.Property(e => e.ParentId)
+                      .HasColumnName("ParentId")
                       .HasColumnType("int(11)");
 
                 entity.Property(e => e.Name)

@@ -11,8 +11,12 @@ namespace Services.MainDb
     /// <summary>服务</summary>
     public class RoutesService : BaseService<RoutesModel>, IRoutesService
     {
+        private readonly IRoutesStorage _storage;
+
         /// <summary>服务</summary>
         public RoutesService(IRoutesStorage storage) : base(storage)
-        { }
+        {
+            _storage = storage;
+        }
     }
 }
