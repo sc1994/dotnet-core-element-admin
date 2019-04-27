@@ -11,17 +11,16 @@ RUN npm run build:prod
 FROM microsoft/dotnet:2.2-aspnetcore-runtime AS base
 WORKDIR /app
 
-
-FROM microsoft/dotnet:2.2-sdk AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:2.2-stretch AS build
 WORKDIR /src
-COPY ["dotnet-core-element-admin.csproj", "."]
-RUN dotnet restore "dotnet-core-element-admin.csproj"
+COPY ["App/App.csproj", "App/"]
+RUN dotnet restore "App/App.csproj"
 COPY . .
-WORKDIR "/src"
-RUN dotnet build "dotnet-core-element-admin.csproj" -c Release -o /app
+WORKDIR "/src/App"
+RUN dotnet build "App.csproj" -c Release -o /app
 
 FROM build AS publish
-RUN dotnet publish "dotnet-core-element-admin.csproj" -c Release -o /app
+RUN dotnet publish "App.csproj" -c Release -o /app
 
 FROM base AS final
 WORKDIR /app
@@ -30,4 +29,4 @@ COPY --from=nodepage /usr/src/wwwroot ./wwwroot
 
 EXPOSE 5000
 
-ENTRYPOINT ["dotnet", "dotnet-core-element-admin.dll"]
+ENTRYPOINT ["dotnet", "App.dll"]
