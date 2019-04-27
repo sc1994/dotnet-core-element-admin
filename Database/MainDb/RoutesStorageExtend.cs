@@ -1,5 +1,5 @@
 // =============系统自动生成=============
-// 时间：2019/4/27 16:16
+// 时间：2019/4/27 17:49
 // 备注：简单的数据库操作方法，以及声明表结构。请勿在此文件中变动代码。
 // =============系统自动生成=============
 
@@ -156,7 +156,7 @@ namespace Database.MainDb
 
                 entity.Property(e => e.HiddenInt)
                       .HasColumnName("HiddenInt")
-                      .HasColumnType("tinyint(1)");
+                      .HasColumnType("int(11)");
 
                 entity.Property(e => e.Redirect)
                       .HasColumnName("Redirect")
@@ -176,7 +176,7 @@ namespace Database.MainDb
 
                 entity.Property(e => e.BreadcrumbInt)
                       .HasColumnName("BreadcrumbInt")
-                      .HasColumnType("tinyint(1)");
+                      .HasColumnType("int(11)");
             });
         }
     }

@@ -1,5 +1,5 @@
 // =============系统自动生成=============
-// 时间：2019/4/27 16:16
+// 时间：2019/4/27 17:45
 // 备注：简单的数据库操作方法，以及声明表结构。请勿在此文件中变动代码。
 // =============系统自动生成=============
 
@@ -53,11 +53,11 @@ namespace Database.MainDb
 
             if (defaultModel.Id != predicate.Id)
                 search = x => x.Id == predicate.Id;
-            if (defaultModel.RoleId != predicate.RoleId)
+            if (defaultModel.RoleKey != predicate.RoleKey)
             {
                 if (search == null)
-                    search = x => x.RoleId == predicate.RoleId;
-                else search = search.And(x => x.RoleId == predicate.RoleId);
+                    search = x => x.RoleKey == predicate.RoleKey;
+                else search = search.And(x => x.RoleKey == predicate.RoleKey);
             }
             if (defaultModel.RouteId != predicate.RouteId)
             {
@@ -90,10 +90,10 @@ namespace Database.MainDb
                       .HasColumnName("Id")
                       .HasColumnType("int(11)");
 
-                entity.Property(e => e.RoleId)
+                entity.Property(e => e.RoleKey)
                       .IsRequired()
-                      .HasColumnName("RoleId")
-                      .HasColumnType("int(11)");
+                      .HasColumnName("RoleKey")
+                      .HasColumnType("varchar(255)");
 
                 entity.Property(e => e.RouteId)
                       .IsRequired()
