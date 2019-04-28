@@ -71,48 +71,49 @@
 </template>
 
 <script>
-import { toggleClass } from '@/utils'
-import '@/assets/custom-theme/index.css' // the theme changed version element-ui css
+  import { toggleClass } from '@/utils'
+  import '@/assets/custom-theme/index.css' // the theme changed version element-ui css
 
-export default {
-  name: 'Theme',
-  data() {
-    return {
-      theme: false,
-      tags: [
-        { name: 'Tag One', type: '' },
-        { name: 'Tag Two', type: 'info' },
-        { name: 'Tag Three', type: 'success' },
-        { name: 'Tag Four', type: 'warning' },
-        { name: 'Tag Five', type: 'danger' }
-      ],
-      slideValue: 50,
-      radio: 3
-    }
-  },
-  watch: {
-    theme() {
-      toggleClass(document.body, 'custom-theme')
+  export default {
+    name: 'Theme',
+    data() {
+      return {
+        theme: false,
+        tags: [
+          { name: 'Tag One', type: '' },
+          { name: 'Tag Two', type: 'info' },
+          { name: 'Tag Three', type: 'success' },
+          { name: 'Tag Four', type: 'warning' },
+          { name: 'Tag Five', type: 'danger' }
+        ],
+        slideValue: 50,
+        radio: 3
+      }
+    },
+    watch: {
+      theme() {
+        toggleClass(document.body, 'custom-theme')
+      }
     }
   }
-}
 </script>
 
 <style scoped>
-.field-label{
-  vertical-align: middle;
-}
-.box-card {
-  width: 400px;
-  max-width: 100%;
-  margin: 20px auto;
-}
+  .field-label {
+    vertical-align: middle;
+  }
 
-.block {
-  padding: 30px 24px;
-}
+  .box-card {
+    width: 400px;
+    max-width: 100%;
+    margin: 20px auto;
+  }
 
-.tag-item {
-  margin-right: 15px;
-}
+  .block {
+    padding: 30px 24px;
+  }
+
+  .tag-item {
+    margin-right: 15px;
+  }
 </style>

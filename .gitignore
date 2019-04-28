@@ -279,7 +279,6 @@ selenium-debug.log
 *.suo
 *.ntvs*
 *.njsproj
-*.sln
 *.local
 package-lock.json
 yarn.lock

@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Models;
 
 namespace Controllers
 {
@@ -7,15 +9,45 @@ namespace Controllers
     public class UserController
     {
         [HttpPost("login")]
-        public string Login(object model)
+        public ResultModel<dynamic> Login(object model)
         {
-            return "{\"code\":20000,\"data\":{\"token\":\"admin-token\"}}";
+            return new ResultModel<dynamic>
+            {
+                Code = 20000,
+                Data = new
+                {
+                    Token = "admin-token"
+                }
+            };
+        }
+
+        [HttpPost("logout")]
+        public ResultModel<string> Logout()
+        {
+            return new ResultModel<string>
+            {
+                Code = 20000,
+                Data = "success"
+            };
         }
 
         [HttpGet("info")]
-        public string Info(string token)
+        public ResultModel<UserInfoModel> Info(string token)
         {
-            return "{\"code\":20000,\"data\":{\"roles\":[\"admin\"],\"introduction\":\"I am a super administrator\",\"avatar\":\"https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif\",\"name\":\"Super Admin\"}}";
+            return new ResultModel<UserInfoModel>
+            {
+                Code = 20000,
+                Data = new UserInfoModel
+                {
+                    Name = "Super Admin",
+                    Avatar = "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
+                    Introduction = "I am a super administrator",
+                    Roles = new List<string>
+                            {
+                              "admin"
+                            }
+                }
+            };
         }
     }
 }

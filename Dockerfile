@@ -11,6 +11,7 @@ RUN npm run build:prod
 FROM microsoft/dotnet:2.2-aspnetcore-runtime AS base
 WORKDIR /app
 
+
 FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /src
 COPY ["dotnet-core-element-admin.csproj", "."]
