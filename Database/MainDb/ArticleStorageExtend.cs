@@ -1,5 +1,5 @@
 // =============系统自动生成=============
-// 时间：2019/4/27 16:16
+// 时间：2019/4/29 15:11
 // 备注：简单的数据库操作方法，以及声明表结构。请勿在此文件中变动代码。
 // =============系统自动生成=============
 
@@ -51,50 +51,8 @@ namespace Database.MainDb
             Expression<Func<ArticleModel, bool>> search = null;
             var defaultModel = new ArticleModel();
 
-            if (defaultModel.Id != predicate.Id)
-                search = x => x.Id == predicate.Id;
-            if (defaultModel.Importance != predicate.Importance)
-            {
-                if (search == null)
-                    search = x => x.Importance == predicate.Importance;
-                else search = search.And(x => x.Importance == predicate.Importance);
-            }
-            if (defaultModel.Remark != predicate.Remark)
-            {
-                if (search == null)
-                    search = x => x.Remark == predicate.Remark;
-                else search = search.And(x => x.Remark == predicate.Remark);
-            }
-            if (defaultModel.Timestamp != predicate.Timestamp)
-            {
-                if (search == null)
-                    search = x => x.Timestamp == predicate.Timestamp;
-                else search = search.And(x => x.Timestamp == predicate.Timestamp);
-            }
-            if (defaultModel.Title != predicate.Title)
-            {
-                if (search == null)
-                    search = x => x.Title == predicate.Title;
-                else search = search.And(x => x.Title == predicate.Title);
-            }
-            if (defaultModel.Status != predicate.Status)
-            {
-                if (search == null)
-                    search = x => x.Status == predicate.Status;
-                else search = search.And(x => x.Status == predicate.Status);
-            }
-            if (defaultModel.Type != predicate.Type)
-            {
-                if (search == null)
-                    search = x => x.Type == predicate.Type;
-                else search = search.And(x => x.Type == predicate.Type);
-            }
             if (defaultModel.Author != predicate.Author)
-            {
-                if (search == null)
-                    search = x => x.Author == predicate.Author;
-                else search = search.And(x => x.Author == predicate.Author);
-            }
+                search = x => x.Author == predicate.Author;
             if (defaultModel.CommentDisabled != predicate.CommentDisabled)
             {
                 if (search == null)
@@ -125,11 +83,23 @@ namespace Database.MainDb
                     search = x => x.Forecast == predicate.Forecast;
                 else search = search.And(x => x.Forecast == predicate.Forecast);
             }
+            if (defaultModel.Id != predicate.Id)
+            {
+                if (search == null)
+                    search = x => x.Id == predicate.Id;
+                else search = search.And(x => x.Id == predicate.Id);
+            }
             if (defaultModel.ImageUri != predicate.ImageUri)
             {
                 if (search == null)
                     search = x => x.ImageUri == predicate.ImageUri;
                 else search = search.And(x => x.ImageUri == predicate.ImageUri);
+            }
+            if (defaultModel.Importance != predicate.Importance)
+            {
+                if (search == null)
+                    search = x => x.Importance == predicate.Importance;
+                else search = search.And(x => x.Importance == predicate.Importance);
             }
             if (defaultModel.Pageviews != predicate.Pageviews)
             {
@@ -143,11 +113,41 @@ namespace Database.MainDb
                     search = x => x.Platforms == predicate.Platforms;
                 else search = search.And(x => x.Platforms == predicate.Platforms);
             }
+            if (defaultModel.Remark != predicate.Remark)
+            {
+                if (search == null)
+                    search = x => x.Remark == predicate.Remark;
+                else search = search.And(x => x.Remark == predicate.Remark);
+            }
             if (defaultModel.Reviewer != predicate.Reviewer)
             {
                 if (search == null)
                     search = x => x.Reviewer == predicate.Reviewer;
                 else search = search.And(x => x.Reviewer == predicate.Reviewer);
+            }
+            if (defaultModel.Status != predicate.Status)
+            {
+                if (search == null)
+                    search = x => x.Status == predicate.Status;
+                else search = search.And(x => x.Status == predicate.Status);
+            }
+            if (defaultModel.Timestamp != predicate.Timestamp)
+            {
+                if (search == null)
+                    search = x => x.Timestamp == predicate.Timestamp;
+                else search = search.And(x => x.Timestamp == predicate.Timestamp);
+            }
+            if (defaultModel.Title != predicate.Title)
+            {
+                if (search == null)
+                    search = x => x.Title == predicate.Title;
+                else search = search.And(x => x.Title == predicate.Title);
+            }
+            if (defaultModel.Type != predicate.Type)
+            {
+                if (search == null)
+                    search = x => x.Type == predicate.Type;
+                else search = search.And(x => x.Type == predicate.Type);
             }
             if (search == null)
                 search = x => x.Id.ToString() != ""; // 添加默认条件，不推荐，务必在查询时加上条件
@@ -167,37 +167,6 @@ namespace Database.MainDb
         {
             modelBuilder.Entity<ArticleModel>(entity =>
             {
-                entity.HasKey(e => e.Id)
-                      .HasName("PRIMARY");
-
-                entity.Property(e => e.Id)
-                      .HasColumnName("Id")
-                      .HasColumnType("int(11)");
-
-                entity.Property(e => e.Importance)
-                      .HasColumnName("Importance")
-                      .HasColumnType("int(11)");
-
-                entity.Property(e => e.Remark)
-                      .HasColumnName("Remark")
-                      .HasColumnType("varchar(255)");
-
-                entity.Property(e => e.Timestamp)
-                      .HasColumnName("Timestamp")
-                      .HasColumnType("varchar(255)");
-
-                entity.Property(e => e.Title)
-                      .HasColumnName("Title")
-                      .HasColumnType("varchar(255)");
-
-                entity.Property(e => e.Status)
-                      .HasColumnName("Status")
-                      .HasColumnType("varchar(255)");
-
-                entity.Property(e => e.Type)
-                      .HasColumnName("Type")
-                      .HasColumnType("varchar(255)");
-
                 entity.Property(e => e.Author)
                       .HasColumnName("Author")
                       .HasColumnType("varchar(255)");
@@ -222,9 +191,20 @@ namespace Database.MainDb
                       .HasColumnName("Forecast")
                       .HasColumnType("decimal(10,10)");
 
+                entity.HasKey(e => e.Id)
+                      .HasName("PRIMARY");
+
+                entity.Property(e => e.Id)
+                      .HasColumnName("Id")
+                      .HasColumnType("int(11)");
+
                 entity.Property(e => e.ImageUri)
                       .HasColumnName("ImageUri")
                       .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.Importance)
+                      .HasColumnName("Importance")
+                      .HasColumnType("int(11)");
 
                 entity.Property(e => e.Pageviews)
                       .HasColumnName("Pageviews")
@@ -234,8 +214,28 @@ namespace Database.MainDb
                       .HasColumnName("Platforms")
                       .HasColumnType("varchar(255)");
 
+                entity.Property(e => e.Remark)
+                      .HasColumnName("Remark")
+                      .HasColumnType("varchar(255)");
+
                 entity.Property(e => e.Reviewer)
                       .HasColumnName("Reviewer")
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.Status)
+                      .HasColumnName("Status")
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.Timestamp)
+                      .HasColumnName("Timestamp")
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.Title)
+                      .HasColumnName("Title")
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.Type)
+                      .HasColumnName("Type")
                       .HasColumnType("varchar(255)");
             });
         }

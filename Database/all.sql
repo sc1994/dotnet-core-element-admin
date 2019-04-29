@@ -2,7 +2,7 @@ CREATE DATABASE MainDb
 	CHARACTER SET utf8mb4
 	COLLATE utf8mb4_0900_ai_ci;
 
-
+DROP TABLE IF EXISTS MainDb.Article;
 CREATE TABLE MainDb.Article (
   Id              INT(11)      NOT NULL    AUTO_INCREMENT,
   Importance      INT(11)      DEFAULT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE MainDb.Article (
   DisplayTime     DATETIME     DEFAULT NULL,
   Forecast        DEC(10,10)   DEFAULT NULL,
   ImageUri        VARCHAR(255) DEFAULT NULL,
-  Pageviews       VARCHAR(255) DEFAULT NULL,
+  Pageviews       INT(11)      DEFAULT NULL,
   Platforms       VARCHAR(255) DEFAULT NULL,
   Reviewer        VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (Id)
@@ -46,7 +46,8 @@ CREATE TABLE MainDb.Routes (
   Roles         VARCHAR(255) DEFAULT NULL COMMENT '设置该路由进入的权限，多角色以,风格',
   Title         VARCHAR(255) DEFAULT NULL COMMENT '设置该路由在侧边栏和面包屑中展示的名字', 
   Icon          VARCHAR(255) DEFAULT NULL COMMENT '设置该路由的图标',
-  BreadcrumbInt INT(11)      DEFAULT NULL COMMENT ' 如果设置为false，则不会在breadcrumb面包屑中显示',
+  BreadcrumbInt INT(11)      DEFAULT NULL COMMENT '如果设置为false，则不会在breadcrumb面包屑中显示',
+  AffixInt      INT(11)      DEFAULT NULL COMMENT '设置true则固定再tag试图中不可删除',
   PRIMARY KEY (`Id`)
 )
 ENGINE = INNODB;
@@ -60,7 +61,7 @@ CREATE TABLE MainDb.RoleRoute(
 )
 ENGINE = INNODB;
 
-
+DROP TABLE IF EXISTS MainDb.Transaction;
 CREATE TABLE MainDb.Transaction(
   Id        INT(11)      NOT NULL     AUTO_INCREMENT,
   OrderNo   VARCHAR(255) DEFAULT NULL,
@@ -72,9 +73,7 @@ CREATE TABLE MainDb.Transaction(
 )
 ENGINE = INNODB;
 
-
-
-
+DROP TABLE IF EXISTS MainDb.UserInfo;
 CREATE TABLE MainDb.UserInfo(
   Id           INT(11)      NOT NULL     AUTO_INCREMENT,
   RolesString  VARCHAR(255) DEFAULT NULL,
@@ -87,7 +86,3 @@ CREATE TABLE MainDb.UserInfo(
   PRIMARY KEY (`Id`)
 )
 ENGINE = INNODB;
-
-
-
-

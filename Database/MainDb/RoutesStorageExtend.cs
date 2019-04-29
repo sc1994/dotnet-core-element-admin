@@ -1,5 +1,5 @@
 // =============系统自动生成=============
-// 时间：2019/4/27 17:49
+// 时间：2019/4/29 15:11
 // 备注：简单的数据库操作方法，以及声明表结构。请勿在此文件中变动代码。
 // =============系统自动生成=============
 
@@ -51,25 +51,13 @@ namespace Database.MainDb
             Expression<Func<RoutesModel, bool>> search = null;
             var defaultModel = new RoutesModel();
 
-            if (defaultModel.Id != predicate.Id)
-                search = x => x.Id == predicate.Id;
-            if (defaultModel.ParentId != predicate.ParentId)
+            if (defaultModel.AffixInt != predicate.AffixInt)
+                search = x => x.AffixInt == predicate.AffixInt;
+            if (defaultModel.BreadcrumbInt != predicate.BreadcrumbInt)
             {
                 if (search == null)
-                    search = x => x.ParentId == predicate.ParentId;
-                else search = search.And(x => x.ParentId == predicate.ParentId);
-            }
-            if (defaultModel.Name != predicate.Name)
-            {
-                if (search == null)
-                    search = x => x.Name == predicate.Name;
-                else search = search.And(x => x.Name == predicate.Name);
-            }
-            if (defaultModel.Path != predicate.Path)
-            {
-                if (search == null)
-                    search = x => x.Path == predicate.Path;
-                else search = search.And(x => x.Path == predicate.Path);
+                    search = x => x.BreadcrumbInt == predicate.BreadcrumbInt;
+                else search = search.And(x => x.BreadcrumbInt == predicate.BreadcrumbInt);
             }
             if (defaultModel.Component != predicate.Component)
             {
@@ -82,6 +70,36 @@ namespace Database.MainDb
                 if (search == null)
                     search = x => x.HiddenInt == predicate.HiddenInt;
                 else search = search.And(x => x.HiddenInt == predicate.HiddenInt);
+            }
+            if (defaultModel.Icon != predicate.Icon)
+            {
+                if (search == null)
+                    search = x => x.Icon == predicate.Icon;
+                else search = search.And(x => x.Icon == predicate.Icon);
+            }
+            if (defaultModel.Id != predicate.Id)
+            {
+                if (search == null)
+                    search = x => x.Id == predicate.Id;
+                else search = search.And(x => x.Id == predicate.Id);
+            }
+            if (defaultModel.Name != predicate.Name)
+            {
+                if (search == null)
+                    search = x => x.Name == predicate.Name;
+                else search = search.And(x => x.Name == predicate.Name);
+            }
+            if (defaultModel.ParentId != predicate.ParentId)
+            {
+                if (search == null)
+                    search = x => x.ParentId == predicate.ParentId;
+                else search = search.And(x => x.ParentId == predicate.ParentId);
+            }
+            if (defaultModel.Path != predicate.Path)
+            {
+                if (search == null)
+                    search = x => x.Path == predicate.Path;
+                else search = search.And(x => x.Path == predicate.Path);
             }
             if (defaultModel.Redirect != predicate.Redirect)
             {
@@ -101,18 +119,6 @@ namespace Database.MainDb
                     search = x => x.Title == predicate.Title;
                 else search = search.And(x => x.Title == predicate.Title);
             }
-            if (defaultModel.Icon != predicate.Icon)
-            {
-                if (search == null)
-                    search = x => x.Icon == predicate.Icon;
-                else search = search.And(x => x.Icon == predicate.Icon);
-            }
-            if (defaultModel.BreadcrumbInt != predicate.BreadcrumbInt)
-            {
-                if (search == null)
-                    search = x => x.BreadcrumbInt == predicate.BreadcrumbInt;
-                else search = search.And(x => x.BreadcrumbInt == predicate.BreadcrumbInt);
-            }
             if (search == null)
                 search = x => x.Id.ToString() != ""; // 添加默认条件，不推荐，务必在查询时加上条件
 
@@ -131,24 +137,13 @@ namespace Database.MainDb
         {
             modelBuilder.Entity<RoutesModel>(entity =>
             {
-                entity.HasKey(e => e.Id)
-                      .HasName("PRIMARY");
-
-                entity.Property(e => e.Id)
-                      .HasColumnName("Id")
+                entity.Property(e => e.AffixInt)
+                      .HasColumnName("AffixInt")
                       .HasColumnType("int(11)");
 
-                entity.Property(e => e.ParentId)
-                      .HasColumnName("ParentId")
+                entity.Property(e => e.BreadcrumbInt)
+                      .HasColumnName("BreadcrumbInt")
                       .HasColumnType("int(11)");
-
-                entity.Property(e => e.Name)
-                      .HasColumnName("Name")
-                      .HasColumnType("varchar(255)");
-
-                entity.Property(e => e.Path)
-                      .HasColumnName("Path")
-                      .HasColumnType("varchar(255)");
 
                 entity.Property(e => e.Component)
                       .HasColumnName("Component")
@@ -157,6 +152,29 @@ namespace Database.MainDb
                 entity.Property(e => e.HiddenInt)
                       .HasColumnName("HiddenInt")
                       .HasColumnType("int(11)");
+
+                entity.Property(e => e.Icon)
+                      .HasColumnName("Icon")
+                      .HasColumnType("varchar(255)");
+
+                entity.HasKey(e => e.Id)
+                      .HasName("PRIMARY");
+
+                entity.Property(e => e.Id)
+                      .HasColumnName("Id")
+                      .HasColumnType("int(11)");
+
+                entity.Property(e => e.Name)
+                      .HasColumnName("Name")
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.ParentId)
+                      .HasColumnName("ParentId")
+                      .HasColumnType("int(11)");
+
+                entity.Property(e => e.Path)
+                      .HasColumnName("Path")
+                      .HasColumnType("varchar(255)");
 
                 entity.Property(e => e.Redirect)
                       .HasColumnName("Redirect")
@@ -169,14 +187,6 @@ namespace Database.MainDb
                 entity.Property(e => e.Title)
                       .HasColumnName("Title")
                       .HasColumnType("varchar(255)");
-
-                entity.Property(e => e.Icon)
-                      .HasColumnName("Icon")
-                      .HasColumnType("varchar(255)");
-
-                entity.Property(e => e.BreadcrumbInt)
-                      .HasColumnName("BreadcrumbInt")
-                      .HasColumnType("int(11)");
             });
         }
     }

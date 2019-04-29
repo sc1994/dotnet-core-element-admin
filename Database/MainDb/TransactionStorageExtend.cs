@@ -1,5 +1,5 @@
 // =============系统自动生成=============
-// 时间：2019/4/27 16:16
+// 时间：2019/4/29 15:11
 // 备注：简单的数据库操作方法，以及声明表结构。请勿在此文件中变动代码。
 // =============系统自动生成=============
 
@@ -59,18 +59,6 @@ namespace Database.MainDb
                     search = x => x.OrderNo == predicate.OrderNo;
                 else search = search.And(x => x.OrderNo == predicate.OrderNo);
             }
-            if (defaultModel.Timestamp != predicate.Timestamp)
-            {
-                if (search == null)
-                    search = x => x.Timestamp == predicate.Timestamp;
-                else search = search.And(x => x.Timestamp == predicate.Timestamp);
-            }
-            if (defaultModel.Username != predicate.Username)
-            {
-                if (search == null)
-                    search = x => x.Username == predicate.Username;
-                else search = search.And(x => x.Username == predicate.Username);
-            }
             if (defaultModel.Price != predicate.Price)
             {
                 if (search == null)
@@ -82,6 +70,18 @@ namespace Database.MainDb
                 if (search == null)
                     search = x => x.Status == predicate.Status;
                 else search = search.And(x => x.Status == predicate.Status);
+            }
+            if (defaultModel.Timestamp != predicate.Timestamp)
+            {
+                if (search == null)
+                    search = x => x.Timestamp == predicate.Timestamp;
+                else search = search.And(x => x.Timestamp == predicate.Timestamp);
+            }
+            if (defaultModel.Username != predicate.Username)
+            {
+                if (search == null)
+                    search = x => x.Username == predicate.Username;
+                else search = search.And(x => x.Username == predicate.Username);
             }
             if (search == null)
                 search = x => x.Id.ToString() != ""; // 添加默认条件，不推荐，务必在查询时加上条件
@@ -112,20 +112,20 @@ namespace Database.MainDb
                       .HasColumnName("OrderNo")
                       .HasColumnType("varchar(255)");
 
-                entity.Property(e => e.Timestamp)
-                      .HasColumnName("Timestamp")
-                      .HasColumnType("bigint(20)");
-
-                entity.Property(e => e.Username)
-                      .HasColumnName("Username")
-                      .HasColumnType("varchar(255)");
-
                 entity.Property(e => e.Price)
                       .HasColumnName("Price")
                       .HasColumnType("decimal(10,10)");
 
                 entity.Property(e => e.Status)
                       .HasColumnName("Status")
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.Timestamp)
+                      .HasColumnName("Timestamp")
+                      .HasColumnType("bigint(20)");
+
+                entity.Property(e => e.Username)
+                      .HasColumnName("Username")
                       .HasColumnType("varchar(255)");
             });
         }

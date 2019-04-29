@@ -1,32 +1,36 @@
-﻿using System.Collections.Generic;
-using Models.MainDb;
-using Newtonsoft.Json;
+﻿using Models.MainDb;
+using System;
+using System.Collections.Generic;
 
 namespace Models.MainDbModel
 {
     public class RoutesView : RoutesModel
     {
+        public bool? Hidden => HiddenInt == 1;
         public List<RoutesView> Children { get; set; }
-
-        /// <summary>当设置 true 的时候该路由不会再侧边栏出现</summary>
-        public bool Hidden => HiddenInt == 1;
-
         public MetaView Meta => new MetaView
-                                {
-                                    Roles = Roles.Split(','),
-                                    Title = Title,
-                                    Breadcrumb = BreadcrumbInt == 1,
-                                    Icon = Icon
-                                };
+        {
+            Title = Title,
+            Affix = AffixInt == 1,
+            Breadcrumb = BreadcrumbInt == 1,
+            Icon = Icon,
+            Roles = Roles.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+        };
     }
 
     public class MetaView
     {
-        public string[] Roles { get; set; }
         public string Title { get; set; }
         public string Icon { get; set; }
+        public string[] Roles { get; set; }
+        public bool? Affix { get; set; }
+        public bool? Breadcrumb { get; set; }
+    }
 
-        /// <summary> 如果设置为false，则不会在breadcrumb面包屑中显示</summary>
-        public bool Breadcrumb { get; set; }
+    public class RoutesInitView : RoutesModel
+    {
+        public bool? Hidden { get; set; }
+        public List<RoutesInitView> Children { get; set; }
+        public MetaView Meta { get; set; }
     }
 }

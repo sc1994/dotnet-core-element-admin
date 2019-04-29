@@ -1,5 +1,5 @@
 // =============系统自动生成=============
-// 时间：2019/4/27 17:45
+// 时间：2019/4/29 15:11
 // 备注：简单的数据库操作方法，以及声明表结构。请勿在此文件中变动代码。
 // =============系统自动生成=============
 
@@ -51,19 +51,19 @@ namespace Database.MainDb
             Expression<Func<RolesModel, bool>> search = null;
             var defaultModel = new RolesModel();
 
+            if (defaultModel.Description != predicate.Description)
+                search = x => x.Description == predicate.Description;
             if (defaultModel.Key != predicate.Key)
-                search = x => x.Key == predicate.Key;
+            {
+                if (search == null)
+                    search = x => x.Key == predicate.Key;
+                else search = search.And(x => x.Key == predicate.Key);
+            }
             if (defaultModel.Name != predicate.Name)
             {
                 if (search == null)
                     search = x => x.Name == predicate.Name;
                 else search = search.And(x => x.Name == predicate.Name);
-            }
-            if (defaultModel.Description != predicate.Description)
-            {
-                if (search == null)
-                    search = x => x.Description == predicate.Description;
-                else search = search.And(x => x.Description == predicate.Description);
             }
             if (search == null)
                 search = x => x.Key.ToString() != ""; // 添加默认条件，不推荐，务必在查询时加上条件
@@ -83,6 +83,10 @@ namespace Database.MainDb
         {
             modelBuilder.Entity<RolesModel>(entity =>
             {
+                entity.Property(e => e.Description)
+                      .HasColumnName("Description")
+                      .HasColumnType("varchar(255)");
+
                 entity.HasKey(e => e.Key)
                       .HasName("PRIMARY");
 
@@ -92,10 +96,6 @@ namespace Database.MainDb
 
                 entity.Property(e => e.Name)
                       .HasColumnName("Name")
-                      .HasColumnType("varchar(255)");
-
-                entity.Property(e => e.Description)
-                      .HasColumnName("Description")
                       .HasColumnType("varchar(255)");
             });
         }
