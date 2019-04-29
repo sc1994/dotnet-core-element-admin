@@ -1,5 +1,5 @@
 // =============系统自动生成=============
-// 时间：2019/4/29 15:11
+// 时间：2019/4/29 17:22
 // 备注：简单的数据库操作方法，以及声明表结构。请勿在此文件中变动代码。
 // =============系统自动生成=============
 
@@ -51,32 +51,8 @@ namespace Database.MainDb
             Expression<Func<UserInfoModel, bool>> search = null;
             var defaultModel = new UserInfoModel();
 
-            if (defaultModel.Avatar != predicate.Avatar)
-                search = x => x.Avatar == predicate.Avatar;
             if (defaultModel.Id != predicate.Id)
-            {
-                if (search == null)
-                    search = x => x.Id == predicate.Id;
-                else search = search.And(x => x.Id == predicate.Id);
-            }
-            if (defaultModel.Introduction != predicate.Introduction)
-            {
-                if (search == null)
-                    search = x => x.Introduction == predicate.Introduction;
-                else search = search.And(x => x.Introduction == predicate.Introduction);
-            }
-            if (defaultModel.Name != predicate.Name)
-            {
-                if (search == null)
-                    search = x => x.Name == predicate.Name;
-                else search = search.And(x => x.Name == predicate.Name);
-            }
-            if (defaultModel.Password != predicate.Password)
-            {
-                if (search == null)
-                    search = x => x.Password == predicate.Password;
-                else search = search.And(x => x.Password == predicate.Password);
-            }
+                search = x => x.Id == predicate.Id;
             if (defaultModel.RolesString != predicate.RolesString)
             {
                 if (search == null)
@@ -89,11 +65,35 @@ namespace Database.MainDb
                     search = x => x.Token == predicate.Token;
                 else search = search.And(x => x.Token == predicate.Token);
             }
+            if (defaultModel.Introduction != predicate.Introduction)
+            {
+                if (search == null)
+                    search = x => x.Introduction == predicate.Introduction;
+                else search = search.And(x => x.Introduction == predicate.Introduction);
+            }
+            if (defaultModel.Avatar != predicate.Avatar)
+            {
+                if (search == null)
+                    search = x => x.Avatar == predicate.Avatar;
+                else search = search.And(x => x.Avatar == predicate.Avatar);
+            }
+            if (defaultModel.Name != predicate.Name)
+            {
+                if (search == null)
+                    search = x => x.Name == predicate.Name;
+                else search = search.And(x => x.Name == predicate.Name);
+            }
             if (defaultModel.Username != predicate.Username)
             {
                 if (search == null)
                     search = x => x.Username == predicate.Username;
                 else search = search.And(x => x.Username == predicate.Username);
+            }
+            if (defaultModel.Password != predicate.Password)
+            {
+                if (search == null)
+                    search = x => x.Password == predicate.Password;
+                else search = search.And(x => x.Password == predicate.Password);
             }
             if (search == null)
                 search = x => x.Id.ToString() != ""; // 添加默认条件，不推荐，务必在查询时加上条件
@@ -113,28 +113,12 @@ namespace Database.MainDb
         {
             modelBuilder.Entity<UserInfoModel>(entity =>
             {
-                entity.Property(e => e.Avatar)
-                      .HasColumnName("Avatar")
-                      .HasColumnType("varchar(255)");
-
                 entity.HasKey(e => e.Id)
                       .HasName("PRIMARY");
 
                 entity.Property(e => e.Id)
                       .HasColumnName("Id")
                       .HasColumnType("int(11)");
-
-                entity.Property(e => e.Introduction)
-                      .HasColumnName("Introduction")
-                      .HasColumnType("varchar(255)");
-
-                entity.Property(e => e.Name)
-                      .HasColumnName("Name")
-                      .HasColumnType("varchar(255)");
-
-                entity.Property(e => e.Password)
-                      .HasColumnName("Password")
-                      .HasColumnType("varchar(255)");
 
                 entity.Property(e => e.RolesString)
                       .HasColumnName("RolesString")
@@ -144,8 +128,24 @@ namespace Database.MainDb
                       .HasColumnName("Token")
                       .HasColumnType("varchar(255)");
 
+                entity.Property(e => e.Introduction)
+                      .HasColumnName("Introduction")
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.Avatar)
+                      .HasColumnName("Avatar")
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.Name)
+                      .HasColumnName("Name")
+                      .HasColumnType("varchar(255)");
+
                 entity.Property(e => e.Username)
                       .HasColumnName("Username")
+                      .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.Password)
+                      .HasColumnName("Password")
                       .HasColumnType("varchar(255)");
             });
         }

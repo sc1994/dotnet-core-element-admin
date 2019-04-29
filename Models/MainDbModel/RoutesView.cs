@@ -1,5 +1,4 @@
 ﻿using Models.MainDb;
-using System;
 using System.Collections.Generic;
 
 namespace Models.MainDbModel
@@ -13,8 +12,7 @@ namespace Models.MainDbModel
             Title = Title,
             Affix = AffixInt == 1,
             Breadcrumb = BreadcrumbInt == 1,
-            Icon = Icon,
-            Roles = Roles.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+            Icon = Icon
         };
     }
 

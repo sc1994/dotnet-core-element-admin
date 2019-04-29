@@ -42,7 +42,6 @@ namespace Services.MainDb
             @base.AffixInt = that.Meta?.Affix ?? false ? 1 : 0;
             @base.BreadcrumbInt = that.Meta?.Breadcrumb ?? false ? 1 : 0;
             @base.Icon = that.Meta?.Icon ?? "";
-            @base.Roles = string.Join(",", that.Meta?.Roles ?? new string[] { });
             @base.HiddenInt = that.Hidden ?? false ? 1 : 0;
             @base.ParentId = pid;
             var r = await _storage.AddAsync(@base);

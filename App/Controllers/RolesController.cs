@@ -65,7 +65,7 @@ namespace Controllers
             var result = roles.Select(Mapper.ToExtend<RolesView>).ToList();
 
             var roleKeys = result.Select(x => x.Key);
-            var routes = await _routesService.FindAsync(x => x.Id > 0);
+            var routes = (await _routesService.FindAsync(x => x.Id > 0)).ToArray();
             var roleRoutes = await _roleRouteService.FindAsync(x => roleKeys.Contains(x.RoleKey));
 
             result.ForEach(item =>
@@ -77,7 +77,7 @@ namespace Controllers
                                var roots = matchRoutes.Where(x => x.ParentId == 0)
                                                       .Select(Mapper.ToExtend<RoutesView>)
                                                       .ToList();
-                               roots.ForEach(x => _routesService.SetRouteChildren(x, matchRoutes));
+                               roots.ForEach(x => _routesService.SetRouteChildren(x, routes));
                                item.Routes = roots;
                            });
             return Ok(result);

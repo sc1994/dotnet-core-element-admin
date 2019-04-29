@@ -43,7 +43,6 @@ CREATE TABLE MainDb.Routes (
   Component     VARCHAR(255) DEFAULT NULL COMMENT '文件位置',
   HiddenInt     INT(11)      DEFAULT NULL COMMENT '当设置 true 的时候该路由不会再侧边栏出现',
   Redirect      VARCHAR(255) DEFAULT NULL COMMENT '设置了面包屑的位置，当设置 noredirect 的时候该路由在面包屑导航中不可被点击',
-  Roles         VARCHAR(255) DEFAULT NULL COMMENT '设置该路由进入的权限，多角色以,风格',
   Title         VARCHAR(255) DEFAULT NULL COMMENT '设置该路由在侧边栏和面包屑中展示的名字', 
   Icon          VARCHAR(255) DEFAULT NULL COMMENT '设置该路由的图标',
   BreadcrumbInt INT(11)      DEFAULT NULL COMMENT '如果设置为false，则不会在breadcrumb面包屑中显示',

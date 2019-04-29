@@ -18,10 +18,12 @@ namespace Controllers
     public class RoutesController : ControllerBaseExtend
     {
         private readonly IRoutesService _service;
+        private readonly IRoleRouteService _roleRouteService;
 
-        public RoutesController(IRoutesService service)
+        public RoutesController(IRoutesService service, IRoleRouteService roleRouteService)
         {
             _service = service;
+            _roleRouteService = roleRouteService;
         }
 
         [HttpGet]
@@ -38,6 +40,11 @@ namespace Controllers
         [HttpGet("init")]
         public async Task<string> InitRoutes()
         {
+            var allold = await _service.FindAsync(x => x.Id > 0);
+            await _service.RemoveRangeAsync(allold);
+            var allRel = await _roleRouteService.FindAsync(x => x.Id > 0);
+            await _roleRouteService.RemoveRangeAsync(allRel);
+
             var json = System.IO.File.ReadAllText("D:\\1.txt");
             var all = JsonConvert.DeserializeObject<RoutesInitView[]>(json);
 
@@ -45,6 +52,8 @@ namespace Controllers
             {
                 await _service.InitRouteAsync(item, 0);
             }
+
+            await _roleRouteService.InitRoleRoute();
 
             return "OK";
         }

@@ -1,5 +1,5 @@
 // =============系统自动生成=============
-// 时间：2019/4/29 15:11
+// 时间：2019/4/29 17:22
 // 备注：表字段对应的数据模型。请勿在此文件中变动代码。
 // =============系统自动生成=============
 // ReSharper disable InconsistentNaming
@@ -13,6 +13,27 @@ namespace Models.MainDb
     [Table("Article")]
     public class ArticleModel
     {
+        /// <summary></summary>
+        public int Id { get; set; }
+
+        /// <summary></summary>
+        public int Importance { get; set; }
+
+        /// <summary></summary>
+        public string Remark { get; set; }
+
+        /// <summary></summary>
+        public string Timestamp { get; set; }
+
+        /// <summary></summary>
+        public string Title { get; set; }
+
+        /// <summary></summary>
+        public string Status { get; set; }
+
+        /// <summary></summary>
+        public string Type { get; set; }
+
         /// <summary></summary>
         public string Author { get; set; }
 
@@ -32,13 +53,7 @@ namespace Models.MainDb
         public decimal Forecast { get; set; }
 
         /// <summary></summary>
-        public int Id { get; set; }
-
-        /// <summary></summary>
         public string ImageUri { get; set; }
-
-        /// <summary></summary>
-        public int Importance { get; set; }
 
         /// <summary></summary>
         public int Pageviews { get; set; }
@@ -47,21 +62,6 @@ namespace Models.MainDb
         public string Platforms { get; set; }
 
         /// <summary></summary>
-        public string Remark { get; set; }
-
-        /// <summary></summary>
         public string Reviewer { get; set; }
-
-        /// <summary></summary>
-        public string Status { get; set; }
-
-        /// <summary></summary>
-        public string Timestamp { get; set; }
-
-        /// <summary></summary>
-        public string Title { get; set; }
-
-        /// <summary></summary>
-        public string Type { get; set; }
     }
 }
