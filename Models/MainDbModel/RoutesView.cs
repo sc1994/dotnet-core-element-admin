@@ -1,19 +1,44 @@
 ﻿using Models.MainDb;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace Models.MainDbModel
 {
     public class RoutesView : RoutesModel
     {
         public bool? Hidden => HiddenInt == 1;
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public List<RoutesView> Children { get; set; }
-        public MetaView Meta => new MetaView
+
+        private MetaView _meta;
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public MetaView Meta
         {
-            Title = Title,
-            Affix = AffixInt == 1,
-            Breadcrumb = BreadcrumbInt == 1,
-            Icon = Icon
-        };
+            get
+            {
+                if (!string.IsNullOrWhiteSpace(Title)
+                    || AffixInt == 1
+                    || BreadcrumbInt == 0
+                    || !string.IsNullOrWhiteSpace(Icon))
+                {
+                    _meta = new MetaView
+                    {
+                        Title = Title,
+                        Affix = AffixInt == 1,
+                        Breadcrumb = BreadcrumbInt == 1,
+                        Icon = Icon,
+                        Roles = _meta?.Roles
+                    };
+                    return _meta;
+                }
+                return null;
+            }
+            set => _meta = value ?? throw new ArgumentNullException(nameof(value));
+        }
     }
 
     public class MetaView

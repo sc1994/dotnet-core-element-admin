@@ -1,12 +1,9 @@
 using App;
 using Microsoft.AspNetCore.Mvc;
 using Models;
-using Models.MainDb;
 using Models.MainDbModel;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Services.MainDb;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Utils;
@@ -30,10 +27,11 @@ namespace Controllers
         public async Task<ResultModel> GetRoutes()
         {
             var all = (await _service.FindAsync(x => x.Id > 0)).ToArray();
+            var allRoleRoutes = (await _roleRouteService.FindAsync(x => x.Id > 0)).ToArray();
             var root = all.Where(x => x.ParentId == 0)
                 .Select(Mapper.ToExtend<RoutesView>)
                 .ToList();
-            root.ForEach(x => _service.SetRouteChildren(x, all));
+            root.ForEach(x => _service.SetRouteChildren(x, all, allRoleRoutes));
             return Ok(root);
         }
 

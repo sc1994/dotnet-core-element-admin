@@ -7,8 +7,14 @@ namespace Utils
     {
         public static TExtend ToExtend<TExtend>(object @base)
         {
-            if (@base == null) return default;
+            if (@base == default) return default;
             return JsonConvert.DeserializeObject<TExtend>(JsonConvert.SerializeObject(@base));
+        }
+
+        public static TCopy Copy<TCopy>(object source)
+        {
+            if (source == default) return default;
+            return JsonConvert.DeserializeObject<TCopy>(JsonConvert.SerializeObject(source));
         }
     }
 }
