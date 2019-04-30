@@ -2,6 +2,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
@@ -21,6 +22,7 @@ namespace dotnet_core_element_admin
                     })
                     .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             Transfuse(services);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // 注入http请求的上下文
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using App;
 using Microsoft.AspNetCore.Mvc;
-using Models;
 using Models.MainDb;
 
 namespace Controllers
@@ -11,12 +11,12 @@ namespace Controllers
     public class TransactionController
     {
         [HttpGet("list")]
-        public ResultModel<PageModel<TransactionModel>> TransactionList()
+        public Response<Page<TransactionModel>> TransactionList()
         {
-            return new ResultModel<PageModel<TransactionModel>>
+            return new Response<Page<TransactionModel>>
             {
                 Code = 20000,
-                Data = new PageModel<TransactionModel>
+                Data = new Page<TransactionModel>
                 {
                     Total = 1,
                     Items = new List<TransactionModel>

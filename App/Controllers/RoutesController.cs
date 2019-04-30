@@ -1,4 +1,5 @@
 using App;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.MainDbModel;
@@ -12,19 +13,21 @@ namespace Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class RoutesController : ControllerBaseExtend
+    public class RoutesController : ApiControllerBase
     {
         private readonly IRoutesService _service;
         private readonly IRoleRouteService _roleRouteService;
 
-        public RoutesController(IRoutesService service, IRoleRouteService roleRouteService)
+        public RoutesController(IHttpContextAccessor context, 
+                                IRoutesService service, 
+                                IRoleRouteService roleRouteService) : base(context)
         {
             _service = service;
             _roleRouteService = roleRouteService;
         }
 
         [HttpGet]
-        public async Task<ResultModel> GetRoutes()
+        public async Task<BaseResponse> GetRoutes()
         {
             var all = (await _service.FindAsync(x => x.Id > 0)).ToArray();
             var allRoleRoutes = (await _roleRouteService.FindAsync(x => x.Id > 0)).ToArray();

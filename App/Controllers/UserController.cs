@@ -1,22 +1,22 @@
-using System;
-using System.Threading.Tasks;
 using App;
 using Database.MainDb;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Models;
 using Models.MainDb;
 using Models.Request.User;
+using System;
+using System.Threading.Tasks;
 using Utils;
 
 namespace Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class UserController : ControllerBaseExtend
+    public class UserController : ApiControllerBase
     {
         private readonly IUserInfoStorage _userInfo;
 
-        public UserController(IUserInfoStorage userInfo)
+        public UserController(IHttpContextAccessor context, IUserInfoStorage userInfo) : base(context)
         {
             _userInfo = userInfo;
             if (_userInfo.FirstOrDefaultAsync(x => x.Username == "admin").Result == default)
@@ -35,7 +35,7 @@ namespace Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ResultModel> Login(LoginRequest request)
+        public async Task<BaseResponse> Login(LoginRequest request)
         {
             var user = await _userInfo.FirstOrDefaultAsync(x => x.Username == request.Username && x.Password == request.Password);
             if (user == default)
@@ -56,9 +56,9 @@ namespace Controllers
         }
 
         [HttpPost("logout")]
-        public ResultModel Logout()
+        public BaseResponse Logout()
         {
-            return new ResultModel<string>
+            return new Response<string>
             {
                 Code = 20000,
                 Data = "success"
@@ -66,7 +66,7 @@ namespace Controllers
         }
 
         [HttpGet("info")]
-        public async Task<ResultModel> GetUserInfo(string token)
+        public async Task<BaseResponse> GetUserInfo(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
             {

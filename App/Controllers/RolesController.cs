@@ -1,6 +1,6 @@
 using App;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Models;
 using Models.MainDb;
 using Models.MainDbModel;
 using Services.MainDb;
@@ -14,15 +14,17 @@ namespace Controllers
     [Route("[controller]")]
     [Route("role")]
     [ApiController]
-    public class RolesController : ControllerBaseExtend
+   
+    public class RolesController : ApiControllerBase
     {
         private readonly IRolesService _service;
         private readonly IRoutesService _routesService;
         private readonly IRoleRouteService _roleRouteService;
 
-        public RolesController(IRolesService service,
+        public RolesController(IHttpContextAccessor context,
+                               IRolesService service,
                                IRoutesService routesService,
-                               IRoleRouteService roleRouteService)
+                               IRoleRouteService roleRouteService) : base(context)
         {
             _service = service;
             _routesService = routesService;
@@ -34,7 +36,7 @@ namespace Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ResultModel> GetRoles()
+        public async Task<BaseResponse> GetRoles()
         {
             var roles = await _service.FindAsync(x => !string.IsNullOrWhiteSpace(x.Key));
             if (roles.Count < 1)
@@ -98,7 +100,7 @@ namespace Controllers
         /// <param name="view"></param>
         /// <returns></returns>
         [HttpPut("{role}")]
-        public async Task<ResultModel> EditRole(string role, [FromBody]RolesView view)
+        public async Task<BaseResponse> EditRole(string role, [FromBody]RolesView view)
         {
             var roleModel = _service.FirstOrDefaultAsync(x => x.Key == role);
             if (roleModel == null) return Bad("Parameters of the abnormal");
@@ -146,7 +148,7 @@ namespace Controllers
         /// <param name="view"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ResultModel> AddRole([FromBody] RolesView view)
+        public async Task<BaseResponse> AddRole([FromBody] RolesView view)
         {
             view.Key = view.Name;
             var roleModel = await _service.FirstOrDefaultAsync(x => x.Key == view.Key);
@@ -169,7 +171,7 @@ namespace Controllers
         /// <param name="role"></param>
         /// <returns></returns>
         [HttpDelete("{role}")]
-        public async Task<ResultModel> Deleterole(string role)
+        public async Task<BaseResponse> Deleterole(string role)
         {
             var roleModel = await _service.FirstOrDefaultAsync(x => x.Key == role);
             if (roleModel == null) return Bad("Parameters of the abnormal");

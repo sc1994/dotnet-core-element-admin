@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
 
-namespace Models
+namespace App
 {
-    public class ResultModel
+    public class BaseResponse
     {
         public int Code { get; set; }
         public string Message { get; set; }
     }
 
-    public class ResultModel<T> : ResultModel
+    public class Response<T> : BaseResponse
     {
         public T Data { get; set; }
     }
 
-    public class PageModel<T>
+    public class Page<T> : BaseResponse
     {
         /// <summary>
         /// 

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using App;
 using Microsoft.AspNetCore.Mvc;
-using Models;
 using Models.MainDb;
 
 namespace Controllers
@@ -12,12 +12,12 @@ namespace Controllers
     public class ArticleController 
     {
         [HttpGet("list")]
-        public ResultModel<PageModel<ArticleModel>> ArticleList(int page, int limit)
+        public Response<Page<ArticleModel>> ArticleList(int page, int limit)
         {
-            return new ResultModel<PageModel<ArticleModel>>
+            return new Response<Page<ArticleModel>>
             {
                 Code = 20000,
-                Data = new PageModel<ArticleModel>
+                Data = new Page<ArticleModel>
                 {
                     Items = new List<ArticleModel>
                     {
@@ -47,9 +47,9 @@ namespace Controllers
             };
         }
 
-        public ResultModel<string> CreateArticle(ArticleModel model)
+        public Response<string> CreateArticle(ArticleModel model)
         {
-            return new ResultModel<string>
+            return new Response<string>
             {
                 Code = 20000,
                 Data = "success"
@@ -57,9 +57,9 @@ namespace Controllers
         }
 
 
-        public ResultModel<string> UpdateArticle(ArticleModel model)
+        public Response<string> UpdateArticle(ArticleModel model)
         {
-            return new ResultModel<string>
+            return new Response<string>
             {
                 Code = 20000,
                 Data = "success"
