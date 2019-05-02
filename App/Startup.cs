@@ -1,5 +1,8 @@
 using System.Linq;
 using System.Reflection;
+using App;
+using AspectCore.Configuration;
+using AspectCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -23,6 +26,16 @@ namespace dotnet_core_element_admin
                     .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             Transfuse(services);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // 注入http请求的上下文
+            //services.ConfigureDynamicProxy(config =>
+            //                               {
+            //                                   config.Interceptors.AddTyped<DataFilterAttribute>();
+            //                               });
+            //services.AddTransient(provider => new DataFilterAttribute());
+            services.AddTransient<ICustomService, CustomService>();
+            services.ConfigureDynamicProxy(config =>
+                                           {
+                                               config.Interceptors.AddTyped<CustomInterceptorAttribute>();
+                                           });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

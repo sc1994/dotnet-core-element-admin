@@ -15,10 +15,12 @@ namespace Controllers
     public class UserController : ApiControllerBase
     {
         private readonly IUserInfoStorage _userInfo;
+        private readonly ICustomService _service;
 
-        public UserController(IHttpContextAccessor context, IUserInfoStorage userInfo) : base(context)
+        public UserController(IHttpContextAccessor context, IUserInfoStorage userInfo, ICustomService service) : base(context)
         {
             _userInfo = userInfo;
+            _service = service;
             if (_userInfo.FirstOrDefaultAsync(x => x.Username == "admin").Result == default)
             {
                 _userInfo.AddAsync(new UserInfoModel
@@ -37,6 +39,7 @@ namespace Controllers
         [HttpPost("login")]
         public async Task<BaseResponse> Login(LoginRequest request)
         {
+            _service.Call();
             var user = await _userInfo.FirstOrDefaultAsync(x => x.Username == request.Username && x.Password == request.Password);
             if (user == default)
             {

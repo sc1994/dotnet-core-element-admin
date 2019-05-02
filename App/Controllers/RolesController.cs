@@ -100,7 +100,6 @@ namespace Controllers
         /// <param name="view"></param>
         /// <returns></returns>
         [HttpPut("{role}")]
-        [DataFilter]
         public async Task<BaseResponse> EditRole(string role, [FromBody]RolesView view)
         {
             var roleModel = _service.FirstOrDefaultAsync(x => x.Key == role);

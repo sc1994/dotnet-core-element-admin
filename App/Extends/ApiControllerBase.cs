@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System.Text;
-using System.Threading;
 
 namespace App
 {
@@ -13,12 +11,12 @@ namespace App
         public ApiControllerBase(IHttpContextAccessor context)
         {
             HttpContext = context;
-            //HttpContext.HttpContext.Request.Headers
+            
             //UserInfo =  //todo 用户数据初始化
             if (1 != 1) // 权限验证
             {
                 context.HttpContext.Response.StatusCode = 401;
-                context.HttpContext.Response.WriteAsync("Authentication failed");
+                context.HttpContext.Response.WriteAsync("authentication failed");
             }
         }
 
@@ -55,5 +53,6 @@ namespace App
             {
                 Code = code
             };
+
     }
 }

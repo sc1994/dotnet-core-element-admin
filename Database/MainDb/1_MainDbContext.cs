@@ -15,7 +15,7 @@ namespace Database.MainDb
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
-                optionsBuilder.UseMySql("Server=10.101.72.6;Port=3307;Database=MainDb;User=root;Password=1qaz2wsx3edc;Min Pool Size=1;Max Pool Size=100;CharSet=utf8;SslMode=none;");
+                optionsBuilder.UseMySql("Server=localhost;Port=3307;Database=MainDb;User=root;Password=1qaz2wsx3edc;Min Pool Size=1;Max Pool Size=100;CharSet=utf8;SslMode=none;");
         }
 
         /// <summary>创建表结构</summary>
