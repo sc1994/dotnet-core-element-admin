@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ElementAdmin.Domain.Context\ElementAdmin.Domain.Context.csproj" />
+    <ProjectReference Include="..\ElementAdmin.Domain.ObjectValue\ElementAdmin.Domain.ObjectValue.csproj" />
+    <ProjectReference Include="..\ElementAdmin.Infrastructure.Repositories\ElementAdmin.Infrastructure.Repositories.csproj" />
+  </ItemGroup>
+
+</Project>
