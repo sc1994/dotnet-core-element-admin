@@ -3,13 +3,15 @@
     <el-card class="box-card">
       <div slot="header">
         <a class="link-type link-title" target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/guide/advanced/theme.html">
-          {{ $t('theme.documentation') }}
+          Theme documentation
         </a>
       </div>
       <div class="box-item">
-        <span class="field-label">{{ $t('theme.change') }} : </span>
+        <span class="field-label">Change Theme : </span>
         <el-switch v-model="theme" />
-        <aside style="margin-top:15px;">{{ $t('theme.tips') }}</aside>
+        <aside style="margin-top:15px;">
+          Tips: It is different from the theme-pick on the navbar is two different skinning methods, each with different application scenarios. Refer to the documentation for details.
+        </aside>
       </div>
     </el-card>
 
@@ -71,49 +73,48 @@
 </template>
 
 <script>
-  import { toggleClass } from '@/utils'
-  import '@/assets/custom-theme/index.css' // the theme changed version element-ui css
+import { toggleClass } from '@/utils'
+import '@/assets/custom-theme/index.css' // the theme changed version element-ui css
 
-  export default {
-    name: 'Theme',
-    data() {
-      return {
-        theme: false,
-        tags: [
-          { name: 'Tag One', type: '' },
-          { name: 'Tag Two', type: 'info' },
-          { name: 'Tag Three', type: 'success' },
-          { name: 'Tag Four', type: 'warning' },
-          { name: 'Tag Five', type: 'danger' }
-        ],
-        slideValue: 50,
-        radio: 3
-      }
-    },
-    watch: {
-      theme() {
-        toggleClass(document.body, 'custom-theme')
-      }
+export default {
+  name: 'Theme',
+  data() {
+    return {
+      theme: false,
+      tags: [
+        { name: 'Tag One', type: '' },
+        { name: 'Tag Two', type: 'info' },
+        { name: 'Tag Three', type: 'success' },
+        { name: 'Tag Four', type: 'warning' },
+        { name: 'Tag Five', type: 'danger' }
+      ],
+      slideValue: 50,
+      radio: 3
+    }
+  },
+  watch: {
+    theme() {
+      toggleClass(document.body, 'custom-theme')
     }
   }
+}
 </script>
 
 <style scoped>
-  .field-label {
-    vertical-align: middle;
-  }
+.field-label{
+  vertical-align: middle;
+}
+.box-card {
+  width: 400px;
+  max-width: 100%;
+  margin: 20px auto;
+}
 
-  .box-card {
-    width: 400px;
-    max-width: 100%;
-    margin: 20px auto;
-  }
+.block {
+  padding: 30px 24px;
+}
 
-  .block {
-    padding: 30px 24px;
-  }
-
-  .tag-item {
-    margin-right: 15px;
-  }
+.tag-item {
+  margin-right: 15px;
+}
 </style>

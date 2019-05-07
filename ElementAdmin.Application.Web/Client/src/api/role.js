@@ -7,13 +7,6 @@ export function getRoutes() {
   })
 }
 
-export function getRolesByKey(key) {
-  return request({
-    url: '/roles/' + key,
-    method: 'get'
-  })
-}
-
 export function getRoles() {
   return request({
     url: '/roles',

@@ -1,8 +1,6 @@
 <template>
   <div class="app-container">
-    <el-button type="primary" @click="handleAddRole">
-      {{ $t("permission.addRole") }}
-    </el-button>
+    <el-button type="primary" @click="handleAddRole">New Role</el-button>
 
     <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
       <el-table-column align="center" label="Role Key" width="220">
@@ -23,10 +21,11 @@
       <el-table-column align="center" label="Operations">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEdit(scope)">
-            {{ $t("permission.editPermission") }}
+            Edit
           </el-button>
           <el-button type="danger" size="small" @click="handleDelete(scope)">
-            {{ $t("permission.delete") }}
+            Delete
+          </el-button>
           </el-button>
         </template>
       </el-table-column>
@@ -63,10 +62,10 @@
       </el-form>
       <div style="text-align:right;">
         <el-button type="danger" @click="dialogVisible = false">
-          {{ $t("permission.cancel") }}
+          Cancel
         </el-button>
         <el-button type="primary" @click="confirmRole">
-          {{ $t("permission.confirm") }}
+          Confirm
         </el-button>
       </div>
     </el-dialog>
@@ -83,7 +82,6 @@ import {
   deleteRole,
   updateRole
 } from "@/api/role";
-import i18n from "@/lang";
 
 const defaultRole = {
   key: "",
@@ -121,21 +119,11 @@ export default {
     async getRoutes() {
       const res = await getRoutes();
       this.serviceRoutes = res.data;
-      this.routes = this.i18n(res.data);
+      this.routes = res.data
     },
     async getRoles() {
       const res = await getRoles();
       this.rolesList = res.data;
-    },
-    i18n(routes) {
-      const app = routes.map(route => {
-        route.label = i18n.t(`route.${route.label}`);
-        if (route.children) {
-          route.children = this.i18n(route.children);
-        }
-        return route;
-      });
-      return app;
     },
     // Reshape the routes structure so that it looks the same as the sidebar
     generateRoutes(routes, basePath = "/") {
