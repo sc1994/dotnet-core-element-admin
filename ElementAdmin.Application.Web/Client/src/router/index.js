@@ -527,15 +527,6 @@ export const asyncRoutes = [{
             }
           }
         ]
-      },
-      {
-        path: 'qiniu',
-        component: () => import('@/views/dev/qiniu/upload'),
-        name: 'Qiniu',
-        meta: {
-          title: 'Qiniu',
-          icon: 'upload'
-        }
       }
     ]
   },

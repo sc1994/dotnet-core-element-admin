@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">登录</h3>
       </div>
 
       <el-form-item prop="username">
@@ -21,7 +21,7 @@
         />
       </el-form-item>
 
-      <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
+      <el-tooltip v-model="capsTooltip" content="大写已锁定" placement="right" manual>
         <el-form-item prop="password">
           <span class="svg-container">
             <svg-icon icon-class="password" />
@@ -45,26 +45,26 @@
         </el-form-item>
       </el-tooltip>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登入</el-button>
 
       <div style="position:relative">
         <div class="tips">
-          <span>Username : admin</span>
-          <span>Password : any</span>
+          <span>用户名 : admin</span>
+          <span>密码 : 111111</span>
         </div>
         <div class="tips">
-          <span style="margin-right:18px;">Username : editor</span>
-          <span>Password : any</span>
+          <span style="margin-right:18px;">用户名 : editor</span>
+          <span>密码 : 111111</span>
         </div>
 
         <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
-          Or connect with
+          或使用第三方登录
         </el-button>
       </div>
     </el-form>
 
     <el-dialog title="Or connect with" :visible.sync="showDialog">
-      Can not be simulated on local, so please combine you own business simulation! ! !
+      无法在本地模拟，所以请结合您自己的业务模拟!!!
       <br>
       <br>
       <br>

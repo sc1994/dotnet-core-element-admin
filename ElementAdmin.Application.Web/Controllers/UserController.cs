@@ -1,8 +1,8 @@
-﻿using ElementAdmin.Domain.Context;
+﻿using System.Threading.Tasks;
+using ElementAdmin.Domain.Context;
 using ElementAdmin.Domain.Factories;
 using ElementAdmin.Infrastructure.Common;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace ElementAdmin.Application.Web.Controllers
 {
@@ -36,9 +36,15 @@ namespace ElementAdmin.Application.Web.Controllers
         public async Task<BaseResponse> GetUserInfo(string token)
         {
             var result = await _login.GetUserInfo(token);
-            if (!result.Done) return Bad(result.Message);
+            if (!result.Done)return Bad(result.Message);
 
             return Ok(result.Result);
+        }
+
+        [HttpPost("logout")]
+        public BaseResponse Logout()
+        {
+            return Ok();
         }
     }
 }

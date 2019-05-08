@@ -1,7 +1,7 @@
-﻿using ElementAdmin.Domain.Factories;
+﻿using System.Threading.Tasks;
+using ElementAdmin.Domain.Factories;
 using ElementAdmin.Infrastructure.Common;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace ElementAdmin.Application.Web.Controllers
 {
@@ -26,8 +26,15 @@ namespace ElementAdmin.Application.Web.Controllers
         public async Task<BaseResponse> GetRoutesTree()
         {
             var result = await _routes.GetRoutesTree();
-            if (!result.Done) return Bad(result.Message);
+            if (!result.Done)return Bad(result.Message);
             return Ok(result.Result);
+        }
+
+        [HttpGet("test")]
+
+        public string RoutesTest()
+        {
+            return "[{\"path\":\"complex-table\",\"component\":\"@/views/dev/table/complex-table\",\"name\":\"ComplexTable\",\"meta\":{\"title\":\"综合 Table\"}}]";
         }
     }
 }
