@@ -119,7 +119,7 @@ export default {
     async getRoutes() {
       const res = await getRoutes();
       this.serviceRoutes = res.data;
-      this.routes = res.data
+      this.routes = res.data;
     },
     async getRoles() {
       const res = await getRoles();

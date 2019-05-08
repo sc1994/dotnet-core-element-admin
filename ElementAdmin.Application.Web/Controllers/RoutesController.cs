@@ -34,7 +34,13 @@ namespace ElementAdmin.Application.Web.Controllers
 
         public string RoutesTest()
         {
-            return "[{\"path\":\"complex-table\",\"component\":\"@/views/dev/table/complex-table\",\"name\":\"ComplexTable\",\"meta\":{\"title\":\"综合 Table\"}}]";
+            return "{\"data\":[{\"path\":\"complex-table\",\"component\":\"@/views/dev/table/complex-table\",\"name\":\"ComplexTable\",\"meta\":{\"title\":\"综合 Table\"}}],\"code\":20000,\"message\":\"success\"}";
+        }
+
+        [HttpGet("roless")]
+        public BaseResponse GetRouteRoles()
+        {
+            return Ok();
         }
     }
 }
