@@ -64,7 +64,7 @@ export default {
   },
   methods: {
     async getRouteRoles() {
-      this.RouteRoles = await getRouteRoles();
+      // this.RouteRoles = await getRouteRoles();
     }
   }
 };

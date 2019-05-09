@@ -1,30 +1,56 @@
-using Microsoft.AspNetCore.Builder;
+ï»¿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Swashbuckle.AspNetCore.Swagger;
 using System.Linq;
 using System.Reflection;
 
 namespace ElementAdmin.Application.Web
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class Startup
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configuration"></param>
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to add services to the container.
+        /// </summary>
+        /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+           
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "API", Version = "v1" });
+                //c.IncludeXmlComments("wwwroot/ElementAdmin.Application.Web.xml");
+            });
+
             Transfuse(services);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="env"></param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -39,20 +65,31 @@ namespace ElementAdmin.Application.Web
 
             app.UsePathBase("/api");
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/api/swagger/v1/swagger.json", "API_V1");
+            });
+
             app.UseCors(x =>
-                            x.AllowAnyMethod()
-                             .AllowAnyHeader()
-                             .AllowAnyOrigin()
-                             .AllowCredentials()); // ÆôÓÃ¿çÓò
+                x.AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowAnyOrigin()
+                    .AllowCredentials());
+
+            app.UseMvc();
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            app.UseMvc();
         }
 
+        /// <summary>
+        /// æ³¨å…¥
+        /// </summary>
+        /// <param name="services"></param>
         public void Transfuse(IServiceCollection services)
         {
-            var types = Assembly.Load("ElementAdmin.Infrastructure.Repositories").GetTypes().ToList(); // »ñÈ¡ÃüÃû¿Õ¼äÏÂµÄÈ«²¿ÊµÀý
+            var types = Assembly.Load("ElementAdmin.Infrastructure.Repositories").GetTypes().ToList(); // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½ï¿½Âµï¿½È«ï¿½ï¿½Êµï¿½ï¿½
             types.AddRange(Assembly.Load("ElementAdmin.Domain.Factories").GetTypes());
 
             foreach (var type in types)
@@ -62,10 +99,12 @@ namespace ElementAdmin.Application.Web
                     var instance = types.FirstOrDefault(x => x.Name == type.Name.Substring(1, type.Name.Length - 1));
                     if (instance != null)
                     {
-                        services.AddSingleton(type, instance); // ×¢Èë
+                        services.AddSingleton(type, instance); // ×¢ï¿½ï¿½
                     }
                 }
             }
+
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
         }
     }
 }

@@ -1,50 +1,49 @@
-﻿using System.Threading.Tasks;
-using ElementAdmin.Domain.Context;
+﻿using ElementAdmin.Domain.Context;
 using ElementAdmin.Domain.Factories;
-using ElementAdmin.Infrastructure.Common;
+using ElementAdmin.Domain.ObjVal;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace ElementAdmin.Application.Web.Controllers
 {
+    /// <summary>
+    /// 用户
+    /// </summary>
     [Route("[controller]")]
     [ApiController]
-    public class UserController : BaseController
+    public class UserController
     {
-        private readonly ILoginFactory _login;
+        private readonly IUserInfoFactory _user;
 
-        public UserController(ILoginFactory login)
+        /// <summary>
+        /// 用户
+        /// </summary>
+        /// <param name="user"></param>
+        public UserController(IUserInfoFactory user)
         {
-            _login = login;
+            _user = user;
         }
 
+        /// <summary>
+        /// 登录
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         [HttpPost("login")]
-        public async Task<BaseResponse> UserLogin(LoginContext context)
+        public async Task<Result> UserLogin(UserLoginContext context)
         {
-            var result = await _login.UserLogin(context);
-
-            if (!result.Done)
-            {
-                return Bad(result.Message);
-            }
-            return Ok(new
-            {
-                token = result.Result
-            });
+            return await _user.UserLoginAsync(context);
         }
 
-        [HttpGet("info")]
-        public async Task<BaseResponse> GetUserInfo(string token)
+        /// <summary>
+        /// 获取登录信息
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        [HttpGet("{token}")]
+        public async Task<Result> GetUserInfo(string token)
         {
-            var result = await _login.GetUserInfo(token);
-            if (!result.Done)return Bad(result.Message);
-
-            return Ok(result.Result);
-        }
-
-        [HttpPost("logout")]
-        public BaseResponse Logout()
-        {
-            return Ok();
+            return await _user.GetUserinfoByTokenAsync(token);
         }
     }
 }

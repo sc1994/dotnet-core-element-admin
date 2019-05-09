@@ -7,9 +7,9 @@ export function getRoutes() {
   })
 }
 
-export function getRouteRoles() {
+export function getRoutesTest() {
   return request({
-    url: '/routes/roless',
+    url: '/routes/test',
     method: 'get'
   })
 }
@@ -43,5 +43,3 @@ export function deleteRole(id) {
     method: 'delete'
   })
 }
-
-
