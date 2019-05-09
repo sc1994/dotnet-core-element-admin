@@ -1,17 +1,17 @@
-﻿using ElementAdmin.Domain.Entities.ElementAdminDb;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using ElementAdmin.Domain.Entities.ElementAdminDb;
 using ElementAdmin.Domain.ObjVal;
 using ElementAdmin.Infrastructure.Common;
 using ElementAdmin.Infrastructure.Repositories.ElementAdminDb;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Valit;
 
 namespace ElementAdmin.Domain.Aggregate
 {
     public class RoleAggRoot : BaseResult
     {
-        public RoleAggRoot() { }
+        public RoleAggRoot() {}
 
         private readonly IRolesRoutesStorage _rolesRoutes;
         private readonly IRolesStorage _roles;
@@ -72,19 +72,19 @@ namespace ElementAdmin.Domain.Aggregate
         /// <returns></returns>
         public async Task<Result> AddAsync()
         {
-            if (!ValitRules()) return Bad("参数不全");
+            if (!ValitRules())return Bad("参数不全");
 
             // 验证角色重复
             var first = await _roles.FirstOrDefaultAsync(x => x.RoleKey == RoleKey);
-            if (first != null) return Bad("已存在的角色");
+            if (first != null)return Bad("已存在的角色");
             //添加角色
             var result1 = await _roles.AddAsync(Mapper.ToMap<RolesEntity>(this));
-            if (!result1.done) return Bad("更新数据异常");
+            if (!result1.done)return Bad("更新数据异常");
             // 添加路由和角色之间的关系
             var addRoleRoutes = RouteKeys.Select(x => new RolesRoutesEntity
             {
                 RoleKey = RoleKey,
-                RouteKey = x
+                    RouteKey = x
             });
             await _rolesRoutes.AddRangeAsync(addRoleRoutes);
 
@@ -97,11 +97,11 @@ namespace ElementAdmin.Domain.Aggregate
         /// <returns></returns>
         public async Task<Result> UpdateAsync()
         {
-            if (!ValitRules()) return Bad("参数不全");
+            if (!ValitRules())return Bad("参数不全");
 
             // 验证角色是否存在
             var first = await _roles.FirstOrDefaultAsync(x => x.RoleKey == RoleKey);
-            if (first == null) return Bad("不存在的角色Key");
+            if (first == null)return Bad("不存在的角色Key");
 
             // 验证是否需要更新
             var rules = ValitRules<RolesEntity>
@@ -125,7 +125,7 @@ namespace ElementAdmin.Domain.Aggregate
             var addModels = addRouteKeys.Select(x => new RolesRoutesEntity
             {
                 RoleKey = RoleKey,
-                RouteKey = x
+                    RouteKey = x
             });
             await _rolesRoutes.AddRangeAsync(addModels);
 
@@ -139,10 +139,10 @@ namespace ElementAdmin.Domain.Aggregate
         public async Task<Result> DeleteAsync()
         {
             var first = await _roles.FirstOrDefaultAsync(x => x.RoleKey == RoleKey);
-            if (first == null) return Bad("错误的角色Key");
+            if (first == null)return Bad("错误的角色Key");
 
             var r1 = await _roles.RemoveAsync(first);
-            if (r1 < 1) return Bad("删除失败");
+            if (r1 < 1)return Bad("删除失败");
 
             var rolesRoutes = await _rolesRoutes.FindAsync(x => x.RoleKey == RoleKey);
             await _rolesRoutes.RemoveRangeAsync(rolesRoutes);
@@ -160,9 +160,9 @@ namespace ElementAdmin.Domain.Aggregate
             // 验证参数
             var rules = ValitRules<RoleAggRoot>
                 .Create()
-                .Ensure(x => x.RoleKey, _ => _.Required())
-                .Ensure(x => x.Description, _ => _.Required())
-                .Ensure(x => x.Name, _ => _.Required())
+                .Ensure(x => x.RoleKey, _ => _.Required().MinLength(1))
+                .Ensure(x => x.Description, _ => _.Required().MinLength(1))
+                .Ensure(x => x.Name, _ => _.Required().MinLength(1))
                 .For(this)
                 .Validate();
             return rules.Succeeded;

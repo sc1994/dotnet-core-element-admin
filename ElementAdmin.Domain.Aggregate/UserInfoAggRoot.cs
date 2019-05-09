@@ -1,9 +1,9 @@
-﻿using ElementAdmin.Domain.Context;
+﻿using System;
+using System.Threading.Tasks;
+using ElementAdmin.Domain.Context;
 using ElementAdmin.Domain.Entities.ElementAdminDb;
 using ElementAdmin.Domain.ObjVal;
 using ElementAdmin.Infrastructure.Repositories.ElementAdminDb;
-using System;
-using System.Threading.Tasks;
 using Valit;
 
 namespace ElementAdmin.Domain.Aggregate
@@ -72,15 +72,15 @@ namespace ElementAdmin.Domain.Aggregate
         {
             var valit = ValitRules<UserLoginContext>
                 .Create()
-                .Ensure(x => x.Username, _ => _.Required())
-                .Ensure(x => x.Password, _ => _.Required())
+                .Ensure(x => x.Username, _ => _.Required().MinLength(1))
+                .Ensure(x => x.Password, _ => _.Required().MinLength(6))
                 .For(context)
                 .Validate();
-            if (!valit.Succeeded) return Bad<dynamic>("缺少必填参数");
+            if (!valit.Succeeded)return Bad<dynamic>("缺少必填参数");
 
             var first = await _user.FirstOrDefaultAsync(x =>
                 x.Username == context.Username && x.Password == context.Password);
-            if (first == null) return Bad<dynamic>("用户名或者密码错误");
+            if (first == null)return Bad<dynamic>("用户名或者密码错误");
 
             first.Token = Guid.NewGuid().ToString();
             await _user.UpdateAsync(first);

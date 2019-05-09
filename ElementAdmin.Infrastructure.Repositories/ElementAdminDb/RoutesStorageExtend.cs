@@ -1,5 +1,5 @@
 // =============系统自动生成=============
-// 时间：2019/5/9 14:25
+// 时间：2019/5/9 17:12
 // 备注：简单的数据库操作方法，以及声明表结构。请勿在此文件中变动代码。
 // =============系统自动生成=============
 
@@ -65,6 +65,12 @@ namespace ElementAdmin.Infrastructure.Repositories.ElementAdminDb
                     search = x => x.RouteKey == predicate.RouteKey;
                 else search = search.And(x => x.RouteKey == predicate.RouteKey);
             }
+            if (defaultModel.Sort != predicate.Sort)
+            {
+                if (search == null)
+                    search = x => x.Sort == predicate.Sort;
+                else search = search.And(x => x.Sort == predicate.Sort);
+            }
             if (search == null)
                 search = x => x.RouteKey.ToString() != ""; // 添加默认条件，不推荐，务必在查询时加上条件
 
@@ -97,6 +103,11 @@ namespace ElementAdmin.Infrastructure.Repositories.ElementAdminDb
                 entity.Property(e => e.RouteKey)
                       .HasColumnName("RouteKey")
                       .HasColumnType("varchar(255)");
+
+                entity.Property(e => e.Sort)
+                      .HasColumnName("Sort")
+                      .HasColumnType("int(11)")
+                      .HasDefaultValueSql("'0'");
             });
         }
     }

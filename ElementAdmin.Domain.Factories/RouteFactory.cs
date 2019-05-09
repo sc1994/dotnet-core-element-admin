@@ -1,9 +1,9 @@
-﻿using ElementAdmin.Domain.Aggregate;
-using ElementAdmin.Domain.ObjVal;
-using ElementAdmin.Infrastructure.Repositories.ElementAdminDb;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ElementAdmin.Domain.Aggregate;
+using ElementAdmin.Domain.ObjVal;
+using ElementAdmin.Infrastructure.Repositories.ElementAdminDb;
 
 namespace ElementAdmin.Domain.Factories
 {
@@ -36,7 +36,9 @@ namespace ElementAdmin.Domain.Factories
             var routes = await _routes.FindAsync(x => !string.IsNullOrWhiteSpace(x.RouteKey));
             var rolesRoutes = await _rolesRoutes.FindAsync(x => x.Id > 0);
 
-            var root = routes.Where(x => string.IsNullOrWhiteSpace(x.ParentKey));
+            var root = routes
+                .OrderByDescending(x => x.Sort)
+                .Where(x => string.IsNullOrWhiteSpace(x.ParentKey));
             var result = root.Select(x => new RouteAggRoot(x, routes, rolesRoutes));
 
             return Ok<IEnumerable<RouteAggRoot>>(result);

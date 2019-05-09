@@ -27,7 +27,7 @@ namespace ElementAdmin.Application.Web.Controllers
         /// 获取路由
         /// </summary>
         /// <returns></returns>
-        [HttpGet("getroutes")]
+        [HttpGet]
         public async Task<Result> GetRoutes()
         {
             return await _route.GetRoutesAsync();

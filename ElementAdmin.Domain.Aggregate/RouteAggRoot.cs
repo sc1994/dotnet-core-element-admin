@@ -1,7 +1,7 @@
-﻿using ElementAdmin.Domain.Entities.ElementAdminDb;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using ElementAdmin.Domain.Entities.ElementAdminDb;
+using Newtonsoft.Json;
 
 namespace ElementAdmin.Domain.Aggregate
 {
@@ -24,6 +24,7 @@ namespace ElementAdmin.Domain.Aggregate
             ParentKey = model.ParentKey;
             Name = model.Name;
             RouteKey = model.RouteKey;
+            Sort = model.Sort;
 
             InitChildren();
             InitRoles();

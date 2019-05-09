@@ -5,7 +5,7 @@
     <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
       <el-table-column align="center" label="Role Key" width="220">
         <template slot-scope="scope">
-          {{ scope.row.key }}
+          {{ scope.row.roleKey }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="Role Name" width="220">
@@ -33,39 +33,42 @@
 
     <el-dialog
       :visible.sync="dialogVisible"
-      :title="dialogType === 'edit' ? 'Edit Role' : 'New Role'"
+      :title="dialogType === 'edit' ? '编辑角色' : '添加角色'"
     >
       <el-form :model="role" label-width="80px" label-position="left">
-        <el-form-item label="Name">
-          <el-input v-model="role.name" placeholder="Role Name" />
+        <el-form-item label="关键字">
+          <el-input v-model="role.roleKey" placeholder="角色关键字，不可重复" />
         </el-form-item>
-        <el-form-item label="Desc">
+        <el-form-item label="名称">
+          <el-input v-model="role.name" placeholder="角色名称" />
+        </el-form-item>
+        <el-form-item label="描述">
           <el-input
             v-model="role.description"
             :autosize="{ minRows: 2, maxRows: 4 }"
             type="textarea"
-            placeholder="Role Description"
+            placeholder="描述"
           />
         </el-form-item>
-        <el-form-item label="Menus">
+        <el-form-item label="设置权限">
           <el-tree
             ref="tree"
             :check-strictly="checkStrictly"
             :data="routesData"
             :props="defaultProps"
-            :defaultCheckedKeys="role.routeIds"
+            :defaultCheckedKeys="role.routeKeys"
             show-checkbox
-            node-key="id"
+            node-key="routeKey"
             class="permission-tree"
           />
         </el-form-item>
       </el-form>
       <div style="text-align:right;">
         <el-button type="danger" @click="dialogVisible = false">
-          Cancel
+          取 消
         </el-button>
         <el-button type="primary" @click="confirmRole">
-          Confirm
+          确 定
         </el-button>
       </div>
     </el-dialog>
@@ -75,19 +78,15 @@
 <script>
 import path from "path";
 import { deepClone } from "@/utils";
-import {
-  getRoutes,
-  getRoles,
-  addRole,
-  deleteRole,
-  updateRole
-} from "@/api/role";
+import { getRoles, addRole, deleteRole, updateRole } from "@/api/role";
+
+import { getRoutes } from "@/api/route";
 
 const defaultRole = {
-  key: "",
+  roleKey: "",
   name: "",
   description: "",
-  routeIds: []
+  routeKeys: []
 };
 
 export default {
@@ -101,7 +100,7 @@ export default {
       checkStrictly: false,
       defaultProps: {
         children: "children",
-        label: "label"
+        label: "name"
       }
     };
   },
@@ -190,7 +189,7 @@ export default {
         type: "warning"
       })
         .then(async () => {
-          await deleteRole(row.key);
+          await deleteRole(row.roleKey);
           this.rolesList.splice($index, 1);
           this.$message({
             type: "success",
@@ -229,29 +228,29 @@ export default {
       const isEdit = this.dialogType === "edit";
 
       const checkedKeys = this.$refs.tree.getCheckedKeys();
-      this.role.routeIds = deepClone(checkedKeys);
+      this.role.routeKeys = deepClone(checkedKeys);
 
       if (isEdit) {
-        await updateRole(this.role.key, this.role);
+        await updateRole(this.role.roleKey, this.role);
         for (let index = 0; index < this.rolesList.length; index++) {
-          if (this.rolesList[index].key === this.role.key) {
+          if (this.rolesList[index].roleKey === this.role.roleKey) {
             this.rolesList.splice(index, 1, Object.assign({}, this.role));
             break;
           }
         }
       } else {
         const { data } = await addRole(this.role);
-        this.role.key = data.key;
+        this.role.roleKey = data.roleKey;
         this.rolesList.push(this.role);
       }
 
-      const { description, key, name } = this.role;
+      const { description, roleKey, name } = this.role;
       this.dialogVisible = false;
       this.$notify({
         title: "Success",
         dangerouslyUseHTMLString: true,
         message: `
-            <div>Role Key: ${key}</div>
+            <div>Role Key: ${roleKey}</div>
             <div>Role Nmae: ${name}</div>
             <div>Description: ${description}</div>
           `,

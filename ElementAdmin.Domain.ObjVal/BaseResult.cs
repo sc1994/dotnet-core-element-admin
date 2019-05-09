@@ -17,7 +17,7 @@ namespace ElementAdmin.Domain.ObjVal
         {
             return new Result
             {
-                Code = ResultCodeEnum.成功,
+                Code = ResultCodeEnum.失败,
                 Message = msg
             };
         }
@@ -26,7 +26,7 @@ namespace ElementAdmin.Domain.ObjVal
         {
             return new Result<T>
             {
-                Code = ResultCodeEnum.成功,
+                Code = ResultCodeEnum.失败,
                 Message = msg
             };
         }
