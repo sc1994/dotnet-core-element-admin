@@ -37,7 +37,7 @@ namespace ElementAdmin.Domain.Factories
             var rolesRoutes = await _rolesRoutes.FindAsync(x => x.Id > 0);
 
             var root = routes
-                .OrderByDescending(x => x.Sort)
+                .OrderBy(x => x.Sort)
                 .Where(x => string.IsNullOrWhiteSpace(x.ParentKey));
             var result = root.Select(x => new RouteAggRoot(x, routes, rolesRoutes));
 

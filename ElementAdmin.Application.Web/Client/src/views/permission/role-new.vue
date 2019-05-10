@@ -1,30 +1,30 @@
 <template>
   <div class="app-container">
-    <el-button type="primary" @click="handleAddRole">New Role</el-button>
+    <el-button type="primary" @click="handleAddRole">添加角色</el-button>
 
     <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
-      <el-table-column align="center" label="Role Key" width="220">
+      <el-table-column align="center" label="Key" width="220">
         <template slot-scope="scope">
           {{ scope.row.roleKey }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Role Name" width="220">
+      <el-table-column align="center" label="名称" width="220">
         <template slot-scope="scope">
           {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column align="header-center" label="Description">
+      <el-table-column align="header-center" label="描述">
         <template slot-scope="scope">
           {{ scope.row.description }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Operations">
+      <el-table-column align="center" label="操作">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEdit(scope)">
-            Edit
+            编辑
           </el-button>
           <el-button type="danger" size="small" @click="handleDelete(scope)">
-            Delete
+            删除
           </el-button>
           </el-button>
         </template>
@@ -36,7 +36,7 @@
       :title="dialogType === 'edit' ? '编辑角色' : '添加角色'"
     >
       <el-form :model="role" label-width="80px" label-position="left">
-        <el-form-item label="关键字">
+        <el-form-item label="Key">
           <el-input v-model="role.roleKey" placeholder="角色关键字，不可重复" />
         </el-form-item>
         <el-form-item label="名称">
@@ -183,9 +183,9 @@ export default {
       this.role = scope.row;
     },
     handleDelete({ $index, row }) {
-      this.$confirm("Confirm to remove the role?", "Warning", {
-        confirmButtonText: "Confirm",
-        cancelButtonText: "Cancel",
+      this.$confirm("确定要删除这个角色吗？", "Warning", {
+        confirmButtonText: "确 定",
+        cancelButtonText: "取消",
         type: "warning"
       })
         .then(async () => {
@@ -227,22 +227,19 @@ export default {
     async confirmRole() {
       const isEdit = this.dialogType === "edit";
 
-      const checkedKeys = this.$refs.tree.getCheckedKeys();
+      const checkedKeys = this.getCheckedKeys(
+        this.routes,
+        this.$refs.tree.getCheckedKeys(),
+        "routeKey"
+      );
       this.role.routeKeys = deepClone(checkedKeys);
 
       if (isEdit) {
         await updateRole(this.role.roleKey, this.role);
-        for (let index = 0; index < this.rolesList.length; index++) {
-          if (this.rolesList[index].roleKey === this.role.roleKey) {
-            this.rolesList.splice(index, 1, Object.assign({}, this.role));
-            break;
-          }
-        }
       } else {
         const { data } = await addRole(this.role);
-        this.role.roleKey = data.roleKey;
-        this.rolesList.push(this.role);
       }
+      await this.getRoles();
 
       const { description, roleKey, name } = this.role;
       this.dialogVisible = false;
@@ -256,6 +253,38 @@ export default {
           `,
         type: "success"
       });
+    },
+    getCheckedKeys(data, keys, key) {
+      var res = [];
+      recursion(data, false);
+      return res;
+      function recursion(arr, isChild) {
+        var aCheck = [];
+        for (var i = 0; i < arr.length; i++) {
+          var obj = arr[i];
+          aCheck[i] = false;
+
+          if (obj.children) {
+            aCheck[i] = recursion(obj.children, true) ? true : aCheck[i];
+            if (aCheck[i]) {
+              res.push(obj[key]);
+            }
+          }
+
+          for (var j = 0; j < keys.length; j++) {
+            if (obj[key] == keys[j]) {
+              aCheck[i] = true;
+              if (res.indexOf(obj[key]) == -1) {
+                res.push(obj[key]);
+              }
+              break;
+            }
+          }
+        }
+        if (isChild) {
+          return aCheck.indexOf(true) != -1;
+        }
+      }
     },
     // reference: src/view/layout/components/Sidebar/SidebarItem.vue
     onlyOneShowingChild(children = [], parent) {

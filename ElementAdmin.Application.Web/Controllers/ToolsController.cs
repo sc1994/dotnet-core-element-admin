@@ -1,11 +1,12 @@
-﻿using ElementAdmin.Domain.Context;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using ElementAdmin.Domain.Context;
 using ElementAdmin.Domain.Factories;
 using ElementAdmin.Domain.ObjVal;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace ElementAdmin.Application.Web.Controllers
 {
@@ -31,12 +32,10 @@ namespace ElementAdmin.Application.Web.Controllers
         /// 初始化路由数据
         /// </summary>
         /// <returns></returns>
-        [HttpGet("initroutedata")]
-        public async Task<Result> InitRouteData()
+        [HttpPost("initroutedata")]
+        public async Task<Result> InitRouteData(List<InitRouteDataContext> context)
         {
-            var mock = JsonConvert.DeserializeObject<List<InitRouteDataContext>>(
-                File.ReadAllText(@"D:\Other\ElementAdmin2\ElementAdmin.Application.Web\wwwroot\routes.json"));
-            return await _tools.InitRouteDataAsync(mock);
+            return await _tools.InitRouteDataAsync(context.Where(x => x.path != "*"));
         }
 
         /// <summary>

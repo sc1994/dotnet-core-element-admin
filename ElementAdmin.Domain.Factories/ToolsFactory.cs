@@ -1,11 +1,11 @@
-﻿using ElementAdmin.Domain.Context;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using ElementAdmin.Domain.Context;
 using ElementAdmin.Domain.Entities.ElementAdminDb;
 using ElementAdmin.Domain.ObjVal;
 using ElementAdmin.Infrastructure.Repositories.ElementAdminDb;
 using Microsoft.EntityFrameworkCore.Internal;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace ElementAdmin.Domain.Factories
 {
@@ -16,7 +16,7 @@ namespace ElementAdmin.Domain.Factories
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        Task<Result> InitRouteDataAsync(List<InitRouteDataContext> context);
+        Task<Result> InitRouteDataAsync(IEnumerable<InitRouteDataContext> context);
 
         /// <summary>
         /// 初始化用户数据
@@ -36,12 +36,17 @@ namespace ElementAdmin.Domain.Factories
             _user = user;
         }
 
-        public async Task<Result> InitRouteDataAsync(List<InitRouteDataContext> context)
+        public async Task<Result> InitRouteDataAsync(IEnumerable<InitRouteDataContext> context)
         {
+            var source = _routes.FindAsync(x => !string.IsNullOrWhiteSpace(x.Name));
+            var newData = new List<RoutesEntity>();
             foreach (var item in context)
             {
-                await InitChildrens("", item);
+                InitChildrens("", item, ref newData);
             }
+
+            // todo 增量的形式增删改
+
             return Ok();
         }
 
@@ -51,37 +56,38 @@ namespace ElementAdmin.Domain.Factories
             {
                 new UserInfoEntity
                 {
-                    Name = "管理员一号",
-                    Avatar = "http://img0.imgtn.bdimg.com/it/u=2426955815,3090482659&fm=214&gp=0.jpg",
-                    Introduction = "我是管理员哈哈哈哈",
-                    Password = "111111",
-                    RolesString = "admin,dev",
-                    Token = Guid.NewGuid().ToString(),
-                    Username = "admin"
+                Name = "管理员一号",
+                Avatar = "http://img0.imgtn.bdimg.com/it/u=2426955815,3090482659&fm=214&gp=0.jpg",
+                Introduction = "我是管理员哈哈哈哈",
+                Password = "111111",
+                RolesString = "admin,dev",
+                Token = Guid.NewGuid().ToString(),
+                Username = "admin"
                 }
             };
             await _user.AddRangeAsync(data);
             return Ok();
         }
 
-        private async Task<Result> InitChildrens(string pKey, InitRouteDataContext item)
+        private Result InitChildrens(
+            string pKey,
+            InitRouteDataContext item,
+            ref List<RoutesEntity> newData)
         {
-            var addModel = new List<RoutesEntity>();
 
             if (item.children?.Any() ?? false)
             {
                 foreach (var x in item.children)
                 {
-                    await InitChildrens(item.name, x);
+                    InitChildrens(item.name, x, ref newData);
                 }
             }
-            addModel.Add(new RoutesEntity
+            newData.Add(new RoutesEntity
             {
                 RouteKey = item.name,
-                ParentKey = pKey,
-                Name = item.meta?.title
+                    ParentKey = pKey,
+                    Name = item.meta?.title
             });
-            await _routes.AddRangeAsync(addModel);
             return Ok();
         }
     }

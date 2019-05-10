@@ -31,6 +31,18 @@ namespace ElementAdmin.Domain.Aggregate
         }
 
         /// <summary>
+        /// 初始化路由聚合根
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="routes"></param>
+        public RouteAggRoot(string routeKey, IEnumerable<RoutesEntity> routes)
+        {
+            _routes = routes;
+
+            RouteKey = routeKey;
+        }
+
+        /// <summary>
         /// 子项
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
@@ -57,6 +69,19 @@ namespace ElementAdmin.Domain.Aggregate
         {
             var roles = _rolesRoutes.Where(x => x.RouteKey == RouteKey);
             Roles = roles.Select(x => x.RoleKey);
+        }
+
+        /// <summary>
+        /// 获取父级
+        /// </summary>
+        public void GetParentKeys(ref List<string> result)
+        {
+            var f = _routes.FirstOrDefault(x => x.ParentKey == RouteKey);
+            if (!string.IsNullOrWhiteSpace(f.ParentKey))
+            {
+                new RouteAggRoot(f.ParentKey, _routes).GetParentKeys(ref result);
+                result.Add(f.ParentKey);
+            }
         }
     }
 }

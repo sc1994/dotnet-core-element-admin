@@ -15,6 +15,7 @@ namespace ElementAdmin.Domain.Aggregate
 
         private readonly IRolesRoutesStorage _rolesRoutes;
         private readonly IRolesStorage _roles;
+        private readonly IRoutesStorage _routes;
 
         public RoleAggRoot(IRolesRoutesStorage rolesRoutes, RolesEntity model)
         {
@@ -39,6 +40,18 @@ namespace ElementAdmin.Domain.Aggregate
         {
             _rolesRoutes = rolesRoutes;
             _roles = roles;
+
+            Name = model.Name;
+            RoleKey = model.RoleKey;
+            Description = model.Description;
+            RouteKeys = model.RouteKeys;
+        }
+
+        public RoleAggRoot(IRolesRoutesStorage rolesRoutes, IRolesStorage roles, IRoutesStorage routes, RoleAggRoot model)
+        {
+            _rolesRoutes = rolesRoutes;
+            _roles = roles;
+            _routes = routes;
 
             Name = model.Name;
             RoleKey = model.RoleKey;
@@ -127,6 +140,7 @@ namespace ElementAdmin.Domain.Aggregate
                 RoleKey = RoleKey,
                     RouteKey = x
             });
+
             await _rolesRoutes.AddRangeAsync(addModels);
 
             return Ok();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using ElementAdmin.Domain.Context;
 using ElementAdmin.Domain.Entities.ElementAdminDb;
@@ -11,21 +12,24 @@ namespace ElementAdmin.Domain.Aggregate
     public class UserInfoAggRoot : BaseResult
     {
         private readonly IUserInfoStorage _user;
+        private readonly IRolesRoutesStorage _rolesRoutes;
 
         public UserInfoAggRoot(IUserInfoStorage user)
         {
             _user = user;
         }
 
-        public UserInfoAggRoot(UserInfoEntity entity)
+        public UserInfoAggRoot(UserInfoEntity entity, IRolesRoutesStorage rolesRoutes)
         {
+            _rolesRoutes = rolesRoutes;
+
             Avatar = entity.Avatar;
             Username = entity.Username;
             Introduction = entity.Introduction;
             Name = entity.Name;
-            Password = entity.Password;
             Roles = entity.RolesString.Split(',');
-            Token = entity.Token;
+
+            InitRoutes().Wait();
         }
 
         /// <summary>
@@ -44,24 +48,19 @@ namespace ElementAdmin.Domain.Aggregate
         public string Name { get; set; }
 
         /// <summary>
-        /// 密码
-        /// </summary>
-        public string Password { get; set; }
-
-        /// <summary>
         /// 所属角色
         /// </summary>
         public string[] Roles { get; set; }
 
         /// <summary>
-        /// token
-        /// </summary>
-        public string Token { get; set; }
-
-        /// <summary>
         /// 用户名
         /// </summary>
         public string Username { get; set; }
+
+        /// <summary>
+        /// 可访问的路由
+        /// </summary>
+        public string[] Routes { get; set; }
 
         /// <summary>
         /// 登录
@@ -86,6 +85,12 @@ namespace ElementAdmin.Domain.Aggregate
             await _user.UpdateAsync(first);
 
             return Ok<dynamic>(new { token = first.Token });
+        }
+
+        private async Task InitRoutes()
+        {
+            var routes = await _rolesRoutes.FindAsync(x => Roles.Contains(x.RoleKey));
+            Routes = routes.Select(x => x.RouteKey).ToArray();
         }
     }
 }

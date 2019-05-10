@@ -452,6 +452,14 @@ const devRoutes = {
           }
         }
       ]
+    },
+    {
+      path: 'tools',
+      component: () => import('@/views/dev/tools/index'),
+      name: 'Tools',
+      meta: {
+        title: '工具集'
+      }
     }
   ]
 }

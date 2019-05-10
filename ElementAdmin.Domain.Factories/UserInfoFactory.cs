@@ -1,8 +1,8 @@
-﻿using ElementAdmin.Domain.Aggregate;
+﻿using System.Threading.Tasks;
+using ElementAdmin.Domain.Aggregate;
 using ElementAdmin.Domain.Context;
 using ElementAdmin.Domain.ObjVal;
 using ElementAdmin.Infrastructure.Repositories.ElementAdminDb;
-using System.Threading.Tasks;
 
 namespace ElementAdmin.Domain.Factories
 {
@@ -26,10 +26,12 @@ namespace ElementAdmin.Domain.Factories
     public class UserInfoFactory : IUserInfoFactory
     {
         private readonly IUserInfoStorage _user;
+        private readonly IRolesRoutesStorage _rolesRoutes;
 
-        public UserInfoFactory(IUserInfoStorage user)
+        public UserInfoFactory(IUserInfoStorage user, IRolesRoutesStorage rolesRoutes)
         {
             _user = user;
+            _rolesRoutes = rolesRoutes;
         }
 
         public async Task<Result<dynamic>> UserLoginAsync(UserLoginContext context)
@@ -44,12 +46,12 @@ namespace ElementAdmin.Domain.Factories
             {
                 return new Result<UserInfoAggRoot>
                 {
-                    Code = ResultCodeEnum.失败,
-                    Message = "token 错误"
+                Code = ResultCodeEnum.失败,
+                Message = "token 错误"
                 };
             }
 
-            var result = new UserInfoAggRoot(first);
+            var result = new UserInfoAggRoot(first, _rolesRoutes);
             return new Result<UserInfoAggRoot>
             {
                 Data = result,

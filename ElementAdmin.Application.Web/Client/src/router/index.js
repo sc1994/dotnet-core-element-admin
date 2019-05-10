@@ -9,6 +9,7 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 import devRoutes from './modules/dev'
+import permissionRoutes from './modules/permission'
 
 
 export const constantRoutes = [{
@@ -58,26 +59,8 @@ export const constantRoutes = [{
 ]
 
 
-export const asyncRoutes = [{
-    path: '/permission',
-    component: Layout,
-    redirect: '/permission/page',
-    name: 'Permission',
-    meta: {
-      title: '角色权限',
-      icon: 'lock',
-      roles: ['admin', 'editor'] // you can set roles in root nav
-    },
-    children: [{
-      path: 'role',
-      component: () => import('@/views/permission/role-new'),
-      name: 'RolePermission',
-      meta: {
-        title: '角色权限',
-        roles: ['admin']
-      }
-    }]
-  },
+export const asyncRoutes = [
+  permissionRoutes,
   devRoutes,
   // 404 page must be placed at the end !!!
   {
