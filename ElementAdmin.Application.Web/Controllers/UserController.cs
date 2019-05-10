@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
-using ElementAdmin.Domain.Context;
+﻿using ElementAdmin.Domain.Context.UserInfoContext;
 using ElementAdmin.Domain.Factories;
 using ElementAdmin.Domain.ObjVal;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace ElementAdmin.Application.Web.Controllers
 {
@@ -43,7 +43,7 @@ namespace ElementAdmin.Application.Web.Controllers
         [HttpGet("{token}")]
         public async Task<Result> GetUserInfo(string token)
         {
-            return await _user.GetUserinfoByTokenAsync(token);
+            return await _user.GetUserInfoByTokenAsync(token);
         }
 
         /// <summary>

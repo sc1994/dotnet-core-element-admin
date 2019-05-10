@@ -1,4 +1,4 @@
-﻿namespace ElementAdmin.Domain.Context
+﻿namespace ElementAdmin.Domain.Context.UserInfoContext
 {
     public class UserLoginContext
     {

@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
-using ElementAdmin.Domain.Aggregate;
-using ElementAdmin.Domain.Context;
+﻿using ElementAdmin.Domain.Aggregate;
+using ElementAdmin.Domain.Context.UserInfoContext;
 using ElementAdmin.Domain.ObjVal;
 using ElementAdmin.Infrastructure.Repositories.ElementAdminDb;
+using System.Threading.Tasks;
 
 namespace ElementAdmin.Domain.Factories
 {
@@ -20,7 +20,7 @@ namespace ElementAdmin.Domain.Factories
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<Result<UserInfoAggRoot>> GetUserinfoByTokenAsync(string token);
+        Task<Result<UserInfoContext>> GetUserInfoByTokenAsync(string token);
     }
 
     public class UserInfoFactory : IUserInfoFactory
@@ -36,25 +36,25 @@ namespace ElementAdmin.Domain.Factories
 
         public async Task<Result<dynamic>> UserLoginAsync(UserLoginContext context)
         {
-            return await new UserInfoAggRoot(_user).LoginAsync(context);
+            return await new UserInfoAggRoot().LoginAsync(context, _user);
         }
 
-        public async Task<Result<UserInfoAggRoot>> GetUserinfoByTokenAsync(string token)
+        public async Task<Result<UserInfoContext>> GetUserInfoByTokenAsync(string token)
         {
             var first = await _user.FirstOrDefaultAsync(x => x.Token == token);
             if (first == null)
             {
-                return new Result<UserInfoAggRoot>
+                return new Result<UserInfoContext>
                 {
-                Code = ResultCodeEnum.失败,
-                Message = "token 错误"
+                    Code = ResultCodeEnum.失败,
+                    Message = "token 错误"
                 };
             }
 
-            var result = new UserInfoAggRoot(first, _rolesRoutes);
-            return new Result<UserInfoAggRoot>
+            var result = await new UserInfoAggRoot().GetUserInfoContextAsync(first, _rolesRoutes);
+            return new Result<UserInfoContext>
             {
-                Data = result,
+                Data = result.UserInfoContext,
                 Code = ResultCodeEnum.成功
             };
         }
