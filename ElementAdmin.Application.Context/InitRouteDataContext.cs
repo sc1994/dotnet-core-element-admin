@@ -4,21 +4,20 @@ namespace ElementAdmin.Domain.Context
 {
     public class InitRouteDataContext
     {
-        public string name { get; set; }
-        public InitRouteDataMeta meta { get; set; }
-        public string path { get; set; }
-        public string redirect { get; set; }
-        public List<InitRouteDataContext> children { get; set; }
-
-
+        public string Name { get; set; }
+        public InitRouteDataMeta Meta { get; set; }
+        public string Path { get; set; }
+        public string Redirect { get; set; }
+        public List<InitRouteDataContext> Children { get; set; }
+        public int? Sort { get; set; }
     }
 
     public class InitRouteDataMeta
     {
-        public string title { get; set; }
-        public string icon { get; set; }
-        public bool? noCache { get; set; }
-        public string activeMenu { get; set; }
+        public string Title { get; set; }
+        public string Icon { get; set; }
+        public bool? NoCache { get; set; }
+        public string ActiveMenu { get; set; }
     }
 
 }

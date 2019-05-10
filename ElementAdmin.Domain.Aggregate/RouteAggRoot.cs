@@ -59,7 +59,7 @@ namespace ElementAdmin.Domain.Aggregate
         private void InitChildren()
         {
             var childs = _routes.Where(x => x.ParentKey == RouteKey);
-            Children = childs.Select(x => new RouteAggRoot(x, _routes, _rolesRoutes));
+            Children = childs.Select(x => new RouteAggRoot(x, _routes, _rolesRoutes)).OrderBy(x => x.Sort);
         }
 
         /// <summary>

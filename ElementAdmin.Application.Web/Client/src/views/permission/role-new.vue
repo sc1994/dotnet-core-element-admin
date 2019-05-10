@@ -56,7 +56,7 @@
             :check-strictly="checkStrictly"
             :data="routesData"
             :props="defaultProps"
-            :defaultCheckedKeys="role.routeKeys"
+            :default-checked-keys="role.routeKeys"
             show-checkbox
             node-key="routeKey"
             class="permission-tree"
@@ -178,9 +178,14 @@ export default {
       this.dialogVisible = true;
     },
     handleEdit(scope) {
+      if (this.$refs.tree) {
+        this.$refs.tree.setCheckedNodes([]);
+        this.role.routeKeys = [];
+      }
+      this.role = deepClone(scope.row);
+
       this.dialogType = "edit";
       this.dialogVisible = true;
-      this.role = scope.row;
     },
     handleDelete({ $index, row }) {
       this.$confirm("确定要删除这个角色吗？", "Warning", {
@@ -232,12 +237,13 @@ export default {
         this.$refs.tree.getCheckedKeys(),
         "routeKey"
       );
-      this.role.routeKeys = deepClone(checkedKeys);
+      var clone = deepClone(this.role);
+      clone.routeKeys = checkedKeys;
 
       if (isEdit) {
-        await updateRole(this.role.roleKey, this.role);
+        await updateRole(clone.roleKey, clone);
       } else {
-        const { data } = await addRole(this.role);
+        const { data } = await addRole(clone);
       }
       await this.getRoles();
 

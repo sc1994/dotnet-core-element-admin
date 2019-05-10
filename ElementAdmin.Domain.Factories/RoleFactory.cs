@@ -1,9 +1,9 @@
-﻿using ElementAdmin.Domain.Aggregate;
-using ElementAdmin.Domain.ObjVal;
-using ElementAdmin.Infrastructure.Repositories.ElementAdminDb;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ElementAdmin.Domain.Aggregate;
+using ElementAdmin.Domain.ObjVal;
+using ElementAdmin.Infrastructure.Repositories.ElementAdminDb;
 
 namespace ElementAdmin.Domain.Factories
 {
@@ -42,17 +42,19 @@ namespace ElementAdmin.Domain.Factories
     {
         private readonly IRolesRoutesStorage _rolesRoutes;
         private readonly IRolesStorage _roles;
+        private readonly IRoutesStorage _routes;
 
-        public RoleFactory(IRolesRoutesStorage rolesRoutes, IRolesStorage roles)
+        public RoleFactory(IRolesRoutesStorage rolesRoutes, IRolesStorage roles, IRoutesStorage routes)
         {
             _rolesRoutes = rolesRoutes;
             _roles = roles;
+            _routes = routes;
         }
 
         public async Task<Result<IEnumerable<RoleAggRoot>>> GetRolesAsync()
         {
             var roles = await _roles.FindAsync(x => !string.IsNullOrWhiteSpace(x.RoleKey));
-            var result = roles.Select(x => new RoleAggRoot(_rolesRoutes, x));
+            var result = roles.Select(x => new RoleAggRoot(_rolesRoutes, _routes, x));
 
             return Ok(result);
         }

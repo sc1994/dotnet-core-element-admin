@@ -55,9 +55,9 @@ const devRoutes = {
       path: 'permission',
       component: () => import('@/views/dev/permission/index'),
       redirect: '/dev/permission/page',
-      name: '权限',
+      name: 'Permission Dev',
       meta: {
-        title: 'Permission Dev',
+        title: '权限',
         icon: 'lock',
       },
       children: [{

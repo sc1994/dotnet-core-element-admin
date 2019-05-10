@@ -35,7 +35,7 @@ namespace ElementAdmin.Application.Web.Controllers
         [HttpPost("initroutedata")]
         public async Task<Result> InitRouteData(List<InitRouteDataContext> context)
         {
-            return await _tools.InitRouteDataAsync(context.Where(x => x.path != "*"));
+            return await _tools.InitRouteDataAsync(context.Where(x => x.Path != "*"));
         }
 
         /// <summary>

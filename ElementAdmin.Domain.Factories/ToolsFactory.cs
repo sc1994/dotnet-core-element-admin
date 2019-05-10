@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ElementAdmin.Domain.Context;
 using ElementAdmin.Domain.Entities.ElementAdminDb;
@@ -38,14 +39,21 @@ namespace ElementAdmin.Domain.Factories
 
         public async Task<Result> InitRouteDataAsync(IEnumerable<InitRouteDataContext> context)
         {
-            var source = _routes.FindAsync(x => !string.IsNullOrWhiteSpace(x.Name));
+            var source = await _routes.FindAsync(x => !string.IsNullOrWhiteSpace(x.Name));
             var newData = new List<RoutesEntity>();
             foreach (var item in context)
             {
                 InitChildrens("", item, ref newData);
             }
 
-            // todo 增量的形式增删改
+            var removeKeys = source.Select(x => x.RouteKey).Except(newData.Select(x => x.RouteKey));
+            await _routes.RemoveRangeAsync(source.Where(x => removeKeys.Contains(x.RouteKey)));
+
+            var addKeys = newData.Select(x => x.RouteKey).Except(source.Select(x => x.RouteKey));
+            await _routes.AddRangeAsync(newData.Where(x => addKeys.Contains(x.RouteKey)));
+
+            var updateKeys = source.Select(x => x.RouteKey).Intersect(newData.Select(x => x.RouteKey));
+            await _routes.UpdateRangeAsync(source.Where(x => updateKeys.Contains(x.RouteKey)));
 
             return Ok();
         }
@@ -75,19 +83,24 @@ namespace ElementAdmin.Domain.Factories
             ref List<RoutesEntity> newData)
         {
 
-            if (item.children?.Any() ?? false)
+            if (item.Children?.Any() ?? false)
             {
-                foreach (var x in item.children)
+                foreach (var x in item.Children)
                 {
-                    InitChildrens(item.name, x, ref newData);
+                    InitChildrens(item.Name, x, ref newData);
                 }
             }
-            newData.Add(new RoutesEntity
+            if (!string.IsNullOrWhiteSpace(item.Name))
             {
-                RouteKey = item.name,
-                    ParentKey = pKey,
-                    Name = item.meta?.title
-            });
+                newData.Add(new RoutesEntity
+                {
+                    RouteKey = item.Name,
+                        ParentKey = pKey,
+                        Name = item.Meta?.Title,
+                        Sort = item.Sort ?? newData.Count
+                });
+            }
+
             return Ok();
         }
     }

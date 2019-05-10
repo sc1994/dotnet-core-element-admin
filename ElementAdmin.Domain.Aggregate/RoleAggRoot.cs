@@ -17,9 +17,10 @@ namespace ElementAdmin.Domain.Aggregate
         private readonly IRolesStorage _roles;
         private readonly IRoutesStorage _routes;
 
-        public RoleAggRoot(IRolesRoutesStorage rolesRoutes, RolesEntity model)
+        public RoleAggRoot(IRolesRoutesStorage rolesRoutes, IRoutesStorage routes, RolesEntity model)
         {
             _rolesRoutes = rolesRoutes;
+            _routes = routes;
 
             Name = model.Name;
             RoleKey = model.RoleKey;
@@ -165,8 +166,12 @@ namespace ElementAdmin.Domain.Aggregate
 
         private async Task InitRouteKeys()
         {
+            var sourd = await _routes.FindAsync(x => !string.IsNullOrWhiteSpace(x.Name));
             var routes = await _rolesRoutes.FindAsync(x => x.RoleKey == RoleKey);
-            RouteKeys = routes.Select(x => x.RouteKey);
+            var pKeys = sourd.Select(x => x.ParentKey);
+
+            RouteKeys = routes.Where(x => !pKeys.Contains(x.RouteKey))
+                .Select(x => x.RouteKey);
         }
 
         private bool ValitRules()
