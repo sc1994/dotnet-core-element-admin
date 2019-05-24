@@ -4,8 +4,6 @@
 .gitignore
 .vs
 .vscode
-**/bin
-**/obj
+*/bin
+*/obj
 **/.toolstarget
-**/node_modules
-**/wwwroot

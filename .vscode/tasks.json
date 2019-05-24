@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/ElementAdmin.Application.Web/ElementAdmin.Application.Web.csproj"
+                "${workspaceFolder}/ElementAdmin.Application/ElementAdmin.Application.csproj"
             ],
             "problemMatcher": "$tsc"
         },
@@ -17,7 +17,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/ElementAdmin.Application.Web/ElementAdmin.Application.Web.csproj"
+                "${workspaceFolder}/ElementAdmin.Application/ElementAdmin.Application.csproj"
             ],
             "problemMatcher": "$tsc"
         },
@@ -28,7 +28,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/ElementAdmin.Application.Web/ElementAdmin.Application.Web.csproj"
+                "${workspaceFolder}/ElementAdmin.Application/ElementAdmin.Application.csproj"
             ],
             "problemMatcher": "$tsc"
         }
