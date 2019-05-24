@@ -4,7 +4,6 @@ using AspectCore.DynamicProxy.Parameters;
 using AspectCore.Extensions.AspectScope;
 using AspectCore.Extensions.DependencyInjection;
 using AspectCore.Injector;
-using ElementAdmin.Infrastructure;
 using ElementAdmin.Infrastructure.IoC;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +11,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using Serilog.Formatting.Compact;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace ElementAdmin.Application
@@ -29,6 +30,14 @@ namespace ElementAdmin.Application
                 .AddJsonFile("appsettings.json", true, true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true);
             builder.AddEnvironmentVariables();
+
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo
+                .File(new CompactJsonFormatter(),
+                    "logs/log_.log",
+                    rollingInterval: RollingInterval.Hour)
+                .CreateLogger();
+
             Configuration = builder.Build();
         }
 

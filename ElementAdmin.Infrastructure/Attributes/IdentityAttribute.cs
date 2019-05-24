@@ -12,11 +12,20 @@ namespace ElementAdmin.Infrastructure.Attributes
         {
             var httpContext = context.AspectContext.ServiceProvider.GetService<IHttpContextAccessor>();
             var token = httpContext.HttpContext.Request.Headers["x-token"];
-            httpContext.HttpContext.Response.StatusCode = 403;
-            await httpContext.HttpContext.Response.WriteAsync("do not have permission");
-            httpContext.HttpContext.Abort();
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                await NoAccess(httpContext);
+            }
+            
             context.AspectContext.Parameters[0] = new IdentityModel();
             await next(context);
+        }
+
+        private async Task NoAccess(IHttpContextAccessor http)
+        {
+            http.HttpContext.Response.StatusCode = 403;
+            await http.HttpContext.Response.WriteAsync("do not have permission");
+            http.HttpContext.Abort();
         }
     }
 

@@ -32,74 +32,64 @@ namespace ElementAdmin.Infrastructure.Attributes
         {
             var time = DateTime.Now;
             var perf = new Dictionary<string, double>();
-            using (var log = new LoggerConfiguration().WriteTo.File(new CompactJsonFormatter(),
-                                                                    "logs/log_.json",
-                                                                    rollingInterval: RollingInterval.Hour).CreateLogger())
+
+            var @params = context.Parameters.Select(x =>
             {
-                perf.Add("实例-LoggerConfiguration", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
-                var jsonSetting = new JsonSerializerSettings
+                if (x is Expression expression)
                 {
-                    // todo 
+                    return expression.ToString();
+                }
+                return x;
+            }).ToArray();
+            perf.Add("映射-context.Parameters", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
+            try
+            {
+                await next(context); // 执行函数
+                perf.Add("执行函数", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
+            }
+            catch (Exception e)
+            {
+                Log.Error(JsonConvert.SerializeObject(new LoggingModel
+                {
+                    TracerId = GetTraceId(context),
+                    Parameters = @params,
+                    Exception = e.ToString(),
+                    MethodName = $"{context.ServiceMethod.DeclaringType}.{context.ServiceMethod.Name}"
+                }));
+                perf.Add("进入异常", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
+                throw;
+            }
+            finally
+            {
+                var logContent = new LoggingModel
+                {
+                    TracerId = GetTraceId(context),
+                    MethodName = $"{context.ServiceMethod.DeclaringType}.{context.ServiceMethod.Name}",
+                    Parameters = @params
                 };
-                perf.Add("实例-JsonSerializerSettings", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
-                var @params = context.Parameters.Select(x =>
-                {
-                    if (x is Expression expression)
-                    {
-                        return expression.ToString();
-                    }
-                    return x;
-                }).ToArray();
-                perf.Add("映射-context.Parameters", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
-                try
-                {
-                    await next(context); // 执行函数
-                    perf.Add("执行函数", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
-                }
-                catch (Exception e)
-                {
-                    log.Error(JsonConvert.SerializeObject(new LoggingModel
-                    {
-                        TracerId = GetTraceId(context),
-                        Parameters = @params,
-                        Exception = e.ToString(),
-                        MethodName = $"{context.ServiceMethod.DeclaringType}.{context.ServiceMethod.Name}"
-                    }), jsonSetting);
-                    perf.Add("进入异常", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
-                    throw;
-                }
-                finally
-                {
-                    var logContent = new LoggingModel
-                    {
-                        TracerId = GetTraceId(context),
-                        MethodName = $"{context.ServiceMethod.DeclaringType}.{context.ServiceMethod.Name}",
-                        Parameters = @params
-                    };
 
-                    perf.Add("实例-LoggingModel", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
-                    if (context.ReturnValue != null)
+                perf.Add("实例-LoggingModel", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
+                if (context.ReturnValue != null)
+                {
+                    if (context.ReturnValue is Task
+                        && new[] { "Task", "Task`1" }.Contains(context.ReturnValue.GetType().Name))
                     {
-                        if (context.ReturnValue is Task
-                            && new[] { "Task", "Task`1" }.Contains(context.ReturnValue.GetType().Name))
-                        {
-                            // 不做任何事情
-                        }
-                        else if (context.ReturnValue is Task)
-                        {
-                            var task = await context.UnwrapAsyncReturnValue();
-                            logContent.ReturnValue = task;
-                        }
-                        else
-                        {
-                            logContent.ReturnValue = context.ReturnValue;
-                        }
-
+                        // 不做任何事情
                     }
-                    perf.Add("获取-ReturnValue", (DateTime.Now - time).TotalMilliseconds);
-                    logContent.Performance = perf;
-                    log.Information(JsonConvert.SerializeObject(logContent, jsonSetting));
+                    else if (context.ReturnValue is Task)
+                    {
+                        var task = await context.UnwrapAsyncReturnValue();
+                        logContent.ReturnValue = task;
+                    }
+                    else
+                    {
+                        logContent.ReturnValue = context.ReturnValue;
+                    }
+
                 }
+                perf.Add("获取-ReturnValue", (DateTime.Now - time).TotalMilliseconds);
+                logContent.Performance = perf;
+                Log.Information(JsonConvert.SerializeObject(logContent));
             }
         }
 
