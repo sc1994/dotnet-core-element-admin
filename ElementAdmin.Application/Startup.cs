@@ -6,6 +6,7 @@ using AspectCore.Extensions.DependencyInjection;
 using AspectCore.Injector;
 using ElementAdmin.Infrastructure.IoC;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -55,12 +56,12 @@ namespace ElementAdmin.Application
             RegisterDomain.Register(services);
             RegisterRepository.Register(services);
             RegisterContext.Register(services);
+            RegisterOther.Register(services);
 
             var container = services.ToServiceContainer();
-
-            RegisterLogger.Register(container);
-            container.AddAspectScope();
+            RegisterAspect.Register(container);
             container.Configuration.Interceptors.AddTyped<EnableParameterAspectInterceptor>();
+
             return container.Build();
         }
 

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using AspectCore.DynamicProxy;
 using Newtonsoft.Json;
 using Serilog;
-using Serilog.Formatting.Compact;
 using AspectCore.Extensions.AspectScope;
 
 namespace ElementAdmin.Infrastructure.Attributes
@@ -96,7 +95,8 @@ namespace ElementAdmin.Infrastructure.Attributes
         private string GetTraceId(AspectContext currentContext)
         {
             var scheduler = (IAspectScheduler)currentContext.ServiceProvider.GetService(typeof(IAspectScheduler));
-            var firstContext = scheduler.GetCurrentContexts().First();
+            var firstContext = scheduler.GetCurrentContexts()?.FirstOrDefault();
+            if (firstContext == null) return Guid.NewGuid().ToString();
             if (firstContext.AdditionalData.TryGetValue("trace-id", out var traceId))
             {
                 return traceId.ToString();

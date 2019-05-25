@@ -1,26 +1,22 @@
-using ElementAdmin.Domain.Entity.ElementAdmin;
-using Microsoft.AspNetCore.Http;
+using ElementAdmin.Infrastructure.Attributes;
 using Newtonsoft.Json;
 
 namespace ElementAdmin.Application.Model.Identity
 {
     public class RegisterUserInfo
     {
-        public RegisterUserInfo() { }
-
-        public RegisterUserInfo(IHttpContextAccessor httpContext)
+        public RegisterUserInfo()
         {
-            var token = httpContext.HttpContext.Request.Headers["x-token"];
         }
 
-        public RegisterUserInfo(UserInfoEntity entity, string[] routes)
+        public RegisterUserInfo(IdentityModel model)
         {
-            Avatar = entity.Avatar;
-            Username = entity.UserName;
-            Introduction = entity.Introduction;
-            Name = entity.NickName;
-            Roles = entity.RolesString.Split(',');
-            Routes = routes;
+            Avatar = model.Avatar;
+            Username = model.Username;
+            Introduction = model.Introduction;
+            Name = model.Name;
+            Roles = model.Roles;
+            Routes = model.Routes;
         }
 
         /// <summary>

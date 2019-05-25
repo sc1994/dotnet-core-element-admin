@@ -22,6 +22,15 @@ const devRoutes = {
       }
     },
     {
+      path: 'apilog',
+      component: () => import('@/views/dev/api-log/index'),
+      name: 'ApiLog',
+      meta: {
+        title: '接口日志',
+        icon:"education"
+      }
+    },
+    {
       path: 'guide/index',
       component: () => import('@/views/dev/guide/index'),
       name: 'Guide',

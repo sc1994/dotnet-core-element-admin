@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AspectCore.DynamicProxy.Parameters;
+using ElementAdmin.Infrastructure.Redis;
+using ElementAdmin.Infrastructure.Redis.RedisConst;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,14 +16,20 @@ namespace ElementAdmin.Infrastructure.Attributes
             var token = httpContext.HttpContext.Request.Headers["x-token"];
             if (string.IsNullOrWhiteSpace(token))
             {
-                await NoAccess(httpContext);
+                await NoAccessAsync(httpContext);
             }
-            
-            context.AspectContext.Parameters[0] = new IdentityModel();
+
+            var redis = context.AspectContext.ServiceProvider.GetService<IRedisClient>();
+            var identity = await redis.StringGetAsync<IdentityModel>(UserConst.IdentityKey(token));
+            if (identity == null)
+            {
+                await NoAccessAsync(httpContext);
+            }
+            context.AspectContext.Parameters[0] = identity;
             await next(context);
         }
 
-        private async Task NoAccess(IHttpContextAccessor http)
+        private async Task NoAccessAsync(IHttpContextAccessor http)
         {
             http.HttpContext.Response.StatusCode = 403;
             await http.HttpContext.Response.WriteAsync("do not have permission");
@@ -62,11 +70,6 @@ namespace ElementAdmin.Infrastructure.Attributes
         public string[] Routes { get; set; }
 
         /// <summary>
-        /// 是否删除
-        /// </summary>
-        public bool IsDelete { get; set; } = false;
-
-        /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime CreateAt { get; set; }
@@ -77,8 +80,8 @@ namespace ElementAdmin.Infrastructure.Attributes
         public DateTime UpdateAt { get; set; }
 
         /// <summary>
-        /// 删除时间
+        /// token
         /// </summary>
-        public DateTime DeleteAt { get; set; }
+        public string Token { get; set; }
     }
 }
