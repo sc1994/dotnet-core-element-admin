@@ -32,6 +32,9 @@ namespace ElementAdmin.Infrastructure.Attributes
             var time = DateTime.Now;
             var perf = new Dictionary<string, double>();
 
+            var traceId = GetTraceId(context);
+            perf.Add("获取-TraceId", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
+
             var @params = context.Parameters.Select(x =>
             {
                 if (x is Expression expression)
@@ -40,7 +43,7 @@ namespace ElementAdmin.Infrastructure.Attributes
                 }
                 return x;
             }).ToArray();
-            perf.Add("映射-context.Parameters", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
+            perf.Add("映射-Parameters", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
             try
             {
                 await next(context); // 执行函数
@@ -48,26 +51,18 @@ namespace ElementAdmin.Infrastructure.Attributes
             }
             catch (Exception e)
             {
-                Log.Error(JsonConvert.SerializeObject(new LoggingModel
-                {
-                    TracerId = GetTraceId(context),
-                    Parameters = @params,
-                    Exception = e.ToString(),
-                    MethodName = $"{context.ServiceMethod.DeclaringType}.{context.ServiceMethod.Name}"
-                }));
                 perf.Add("进入异常", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
-                throw;
+                Log.Logger.ForContext<LoggingAttribute>().Error(e,
+                    "InvokeError({TracerId},{MethodName},{Parameters},{Error},{Performance})",
+                    traceId,
+                    $"{context.ServiceMethod.DeclaringType}.{context.ServiceMethod.Name}",
+                    @params,
+                    perf,
+                    e);
             }
             finally
             {
-                var logContent = new LoggingModel
-                {
-                    TracerId = GetTraceId(context),
-                    MethodName = $"{context.ServiceMethod.DeclaringType}.{context.ServiceMethod.Name}",
-                    Parameters = @params
-                };
-
-                perf.Add("实例-LoggingModel", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
+                object returnValue = null;
                 if (context.ReturnValue != null)
                 {
                     if (context.ReturnValue is Task
@@ -78,17 +73,22 @@ namespace ElementAdmin.Infrastructure.Attributes
                     else if (context.ReturnValue is Task)
                     {
                         var task = await context.UnwrapAsyncReturnValue();
-                        logContent.ReturnValue = task;
+                        returnValue = task;
                     }
                     else
                     {
-                        logContent.ReturnValue = context.ReturnValue;
+                        returnValue = context.ReturnValue;
                     }
 
                 }
                 perf.Add("获取-ReturnValue", (DateTime.Now - time).TotalMilliseconds);
-                logContent.Performance = perf;
-                Log.Information(JsonConvert.SerializeObject(logContent));
+                Log.Logger.ForContext<LoggingAttribute>().Information(
+                    "Invoke({TracerId},{MethodName},{Parameters`},{ReturnValue},{Performance})",
+                    traceId,
+                    $"{context.ServiceMethod.DeclaringType}.{context.ServiceMethod.Name}",
+                    @params.ToJson(),
+                    returnValue.ToJson(), // todo 尝试转成字典，一方面能解决自我嵌套的问题，但是反射的性能可能较差，或许可以静态缓存
+                    perf);
             }
         }
 
@@ -129,11 +129,6 @@ namespace ElementAdmin.Infrastructure.Attributes
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public object ReturnValue { get; set; }
-        /// <summary>
-        /// 异常
-        /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Exception { get; set; }
         /// <summary>
         /// 性能
         /// </summary>

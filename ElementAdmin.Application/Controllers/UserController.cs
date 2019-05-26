@@ -15,12 +15,10 @@ namespace ElementAdmin.Application.Controllers
     public class UserController
     {
         private readonly IUserService _user;
-        private readonly ILogger<UserController> _logger;
 
-        public UserController(IUserService user, IHttpContextAccessor httpContext, ILogger<UserController> logger)
+        public UserController(IUserService user)
         {
             _user = user;
-            _logger = logger;
         }
 
         [HttpPost("login")]
