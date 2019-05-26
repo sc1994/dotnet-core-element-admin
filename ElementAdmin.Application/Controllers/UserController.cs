@@ -5,6 +5,7 @@ using ElementAdmin.Application.Model;
 using ElementAdmin.Application.Model.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using static ElementAdmin.Application.Model.ApiResponse;
 
 namespace ElementAdmin.Application.Controllers
@@ -14,12 +15,12 @@ namespace ElementAdmin.Application.Controllers
     public class UserController
     {
         private readonly IUserService _user;
-        private readonly IHttpContextAccessor httpContext;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(IUserService user, IHttpContextAccessor httpContext)
+        public UserController(IUserService user, IHttpContextAccessor httpContext, ILogger<UserController> logger)
         {
             _user = user;
-            this.httpContext = httpContext;
+            _logger = logger;
         }
 
         [HttpPost("login")]
