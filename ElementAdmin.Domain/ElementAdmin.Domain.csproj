@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ElementAdmin.Application.Interface\ElementAdmin.Application.Interface.csproj" />
+    <ProjectReference Include="..\ElementAdmin.Application.Model\ElementAdmin.Application.Model.csproj" />
+    <ProjectReference Include="..\ElementAdmin.Domain.Entity\ElementAdmin.Domain.Entity.csproj" />
+    <ProjectReference Include="..\ElementAdmin.Domain.Interface\ElementAdmin.Domain.Interface.csproj" />
+  </ItemGroup>
+
+</Project>
