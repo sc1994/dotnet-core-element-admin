@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Concurrent;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -27,12 +28,14 @@ namespace ElementAdmin.Infrastructure.Attributes
         /// </summary>
         public bool IgnoreTracer { get; set; } = false;
 
+
         public override async Task Invoke(AspectContext context, AspectDelegate next)
         {
+            var startTime = DateTime.Now.Ticks;
             var time = DateTime.Now;
             var perf = new Dictionary<string, double>();
 
-            var traceId = GetTraceId(context);
+            var (traceId, isMain) = GetTraceId(context);
             perf.Add("获取-TraceId", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
 
             var @params = context.Parameters.Select(x =>
@@ -52,11 +55,13 @@ namespace ElementAdmin.Infrastructure.Attributes
             catch (Exception e)
             {
                 perf.Add("进入异常", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
-                Log.Logger.ForContext<LoggingAttribute>().Error(e,
-                    "InvokeError({TracerId},{MethodName},{Parameters},{Error},{Performance})",
+                Log.Error(e,
+                    "InvokeError({start_timestamp},{tracer_id},{full_method},{method},{parameters},{error},{performance})",
+                    startTime,
                     traceId,
                     $"{context.ServiceMethod.DeclaringType}.{context.ServiceMethod.Name}",
-                    @params,
+                    context.ServiceMethod.Name,
+                    @params.ToJson(),
                     perf,
                     e);
             }
@@ -79,59 +84,36 @@ namespace ElementAdmin.Infrastructure.Attributes
                     {
                         returnValue = context.ReturnValue;
                     }
-
                 }
                 perf.Add("获取-ReturnValue", (DateTime.Now - time).TotalMilliseconds);
-                Log.Logger.ForContext<LoggingAttribute>().Information(
-                    "Invoke({TracerId},{MethodName},{Parameters`},{ReturnValue},{Performance})",
+                var template = !isMain ?
+                                "Invoke({start_timestamp},{tracer_id},{full_method},{method},{parameters},{return_value},{performance})" :
+                                "InvokeChild({start_timestamp},{tracer_id},{full_method},{method},{parameters},{return_value},{performance})";
+                Log.Information(
+                    template,
+                    startTime,
                     traceId,
                     $"{context.ServiceMethod.DeclaringType}.{context.ServiceMethod.Name}",
+                    context.ServiceMethod.Name,
                     @params.ToJson(),
                     returnValue.ToJson(), // todo 尝试转成字典，一方面能解决自我嵌套的问题，但是反射的性能可能较差，或许可以静态缓存
-                    perf);
+                    perf
+                );
             }
         }
 
-        private string GetTraceId(AspectContext currentContext)
+        private (string traceId, bool isMain) GetTraceId(AspectContext currentContext)
         {
             var scheduler = (IAspectScheduler)currentContext.ServiceProvider.GetService(typeof(IAspectScheduler));
             var firstContext = scheduler.GetCurrentContexts()?.FirstOrDefault();
-            if (firstContext == null) return Guid.NewGuid().ToString();
+            if (firstContext == null) return (Guid.NewGuid().ToString(), true);
             if (firstContext.AdditionalData.TryGetValue("trace-id", out var traceId))
             {
-                return traceId.ToString();
+                return (traceId.ToString(), true);
             }
             traceId = Guid.NewGuid();
             firstContext.AdditionalData["trace-id"] = traceId;
-            return traceId.ToString();
+            return (traceId.ToString(), false);
         }
-
-    }
-
-    public class LoggingModel
-    {
-        /// <summary>
-        /// 追踪器
-        /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string TracerId { get; set; }
-        /// <summary>
-        /// 方法名称
-        /// </summary>
-        public string MethodName { get; set; }
-        /// <summary>
-        /// 参数
-        /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public object[] Parameters { get; set; }
-        /// <summary>
-        /// 返回值
-        /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public object ReturnValue { get; set; }
-        /// <summary>
-        /// 性能
-        /// </summary>
-        public Dictionary<string, double> Performance { get; set; }
     }
 }

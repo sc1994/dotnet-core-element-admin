@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -40,12 +41,12 @@ namespace ElementAdmin.Application
 
             // es 日志
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9222"))
+                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(configuration.GetConnectionString("ElasticsearchConnection")))
                 {
-                    //IndexFormat = "ea-index-{yyyy.MM.dd}",
-                    //TemplateName = "default-template",
-                    //TypeName = "default-type",
-                    //MinimumLogEventLevel = LogEventLevel.Information,
+                    // IndexFormat = "element-admin-index-{yyyy.MM.dd.HH}",
+                    // TemplateName = "default-template",
+                    // TypeName = "default-type",
+                    // MinimumLogEventLevel = LogEventLevel.Information,
                     AutoRegisterTemplate = true
                 })
                 //.ReadFrom.Configuration(configuration)
@@ -84,7 +85,7 @@ namespace ElementAdmin.Application
                 app.UseDeveloperExceptionPage();
             }
 
-            logger.AddSerilog();
+            // logger.AddSerilog();
 
             app.UsePathBase("/api");
 

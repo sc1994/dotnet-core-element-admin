@@ -4,6 +4,7 @@ using AspectCore.DynamicProxy.Parameters;
 using ElementAdmin.Infrastructure.Redis;
 using ElementAdmin.Infrastructure.Redis.RedisConst;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ElementAdmin.Infrastructure.Attributes
@@ -13,14 +14,14 @@ namespace ElementAdmin.Infrastructure.Attributes
         public override async Task Invoke(ParameterAspectContext context, ParameterAspectDelegate next)
         {
             var httpContext = context.AspectContext.ServiceProvider.GetService<IHttpContextAccessor>();
+            var config = context.AspectContext.ServiceProvider.GetService<IConfiguration>();
             var token = httpContext.HttpContext.Request.Headers["x-token"];
             if (string.IsNullOrWhiteSpace(token))
             {
                 await NoAccessAsync(httpContext);
             }
 
-            var redis = context.AspectContext.ServiceProvider.GetService<IRedisClient>();
-            var identity = await redis.StringGetAsync<IdentityModel>(UserConst.IdentityKey(token));
+            var identity = await new RedisClient(config).StringGetAsync<IdentityModel>(UserConst.IdentityKey(token));
             if (identity == null)
             {
                 await NoAccessAsync(httpContext);

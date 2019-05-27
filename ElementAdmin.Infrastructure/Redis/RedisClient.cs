@@ -2,17 +2,17 @@
 using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace ElementAdmin.Infrastructure.Redis
 {
     public class RedisClient : IRedisClient
     {
-        private const string _redisSite = "localhost:6379,password=1qaz2wsx3edc";
         private readonly IConnectionMultiplexer _connection;
 
-        public RedisClient()
+        public RedisClient(IConfiguration config)
         {
-            _connection = ConnectionMultiplexer.Connect(_redisSite);
+            _connection = ConnectionMultiplexer.Connect(config.GetConnectionString("RedisConnection"));
         }
 
         public async Task<bool> StringSetAsync<T>(string key, T value, TimeSpan? expriy = null)
