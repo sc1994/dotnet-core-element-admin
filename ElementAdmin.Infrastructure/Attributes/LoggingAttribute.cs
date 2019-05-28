@@ -28,12 +28,12 @@ namespace ElementAdmin.Infrastructure.Attributes
         /// </summary>
         public bool IgnoreTracer { get; set; } = false;
 
-
         public override async Task Invoke(AspectContext context, AspectDelegate next)
         {
             var startTime = DateTime.Now.Ticks;
             var time = DateTime.Now;
             var perf = new Dictionary<string, double>();
+            Exception ex = null;
 
             var (traceId, isMain) = GetTraceId(context);
             perf.Add("获取-TraceId", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
@@ -55,15 +55,7 @@ namespace ElementAdmin.Infrastructure.Attributes
             catch (Exception e)
             {
                 perf.Add("进入异常", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
-                Log.Error(e,
-                    "InvokeError({start_timestamp},{tracer_id},{full_method},{method},{parameters},{error},{performance})",
-                    startTime,
-                    traceId,
-                    $"{context.ServiceMethod.DeclaringType}.{context.ServiceMethod.Name}",
-                    context.ServiceMethod.Name,
-                    @params.ToJson(),
-                    perf,
-                    e);
+                ex = e;
             }
             finally
             {
@@ -85,20 +77,33 @@ namespace ElementAdmin.Infrastructure.Attributes
                         returnValue = context.ReturnValue;
                     }
                 }
-                perf.Add("获取-ReturnValue", (DateTime.Now - time).TotalMilliseconds);
+                perf.Add("获取-ReturnValue", (DateTime.Now - time).TotalMilliseconds); time = DateTime.Now;
+
                 var template = !isMain ?
-                                "Invoke({start_timestamp},{tracer_id},{full_method},{method},{parameters},{return_value},{performance})" :
-                                "InvokeChild({start_timestamp},{tracer_id},{full_method},{method},{parameters},{return_value},{performance})";
-                Log.Information(
-                    template,
+                                   "Invoke({start_timestamp},{tracer_id},{full_method},{method},{parameters},{return_value},{performance},{error})" :
+                                   "InvokeChild({start_timestamp},{tracer_id},{full_method},{method},{parameters},{return_value},{performance},{error})";
+                var property = new object[]
+                {
                     startTime,
                     traceId,
                     $"{context.ServiceMethod.DeclaringType}.{context.ServiceMethod.Name}",
                     context.ServiceMethod.Name,
                     @params.ToJson(),
-                    returnValue.ToJson(), // todo 尝试转成字典，一方面能解决自我嵌套的问题，但是反射的性能可能较差，或许可以静态缓存
-                    perf
-                );
+                    returnValue.ToJson() // todo 尝试转成字典，一方面能解决自我嵌套的问题，但是反射的性能可能较差，或许可以静态缓存
+                };
+
+                perf.Add("初始化-logMessgae", (DateTime.Now - time).TotalMilliseconds);
+
+                if (ex == null)
+                {
+                    property = property.Append(perf).Append(null).ToArray();
+                    Log.Information(template, property);
+                }
+                else
+                {
+                    property = property.Append(perf).Append(ex).ToArray();
+                    Log.Error(template, property);
+                }
             }
         }
 

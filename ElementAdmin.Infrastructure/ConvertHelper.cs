@@ -7,11 +7,13 @@ namespace ElementAdmin.Infrastructure
     {
         public static string ToJson<T>(this T that, Formatting formatting = Formatting.None)
         {
+            if (that == null) return default;
             return JsonConvert.SerializeObject(that, formatting);
         }
 
         public static T ToObjectByJson<T>(this string that)
         {
+            if (that == null) return default;
             return JsonConvert.DeserializeObject<T>(that);
         }
 

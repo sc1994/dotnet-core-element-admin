@@ -8,7 +8,7 @@
           </el-form-item>
         </el-form>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="8">
         <el-form label-width="100px">
           <el-form-item label="时间范围：">
             <div class="block">
@@ -27,14 +27,31 @@
           </el-form-item>
         </el-form>
       </el-col>
+      <el-col :span="6">
+        <el-form label-width="100px">
+          <el-form-item label="异常：">
+            <el-input v-model="methodName"></el-input>
+          </el-form-item>
+        </el-form>
+      </el-col>
+      <el-col :span="4">
+        <el-button type="primary" plain @click="search(1)">搜 索</el-button>
+      </el-col>
     </el-row>
-    <div style="text-align: end;">
-      <el-button type="primary" plain @click="search(1)">搜 索</el-button>
-    </div>
-    <el-table :data="tableData" style="width: 100%" @expand-change="expandChange">
+    <el-table
+      :data="tableData"
+      style="width: 100%"
+      @expand-change="expandChange"
+      :row-class-name="tableRowClassName"
+    >
       <el-table-column type="expand">
         <template slot-scope="props">
-          <el-table :data="props.row.tableData" style="width: 100%" border>
+          <el-table
+            :data="props.row.tableData"
+            style="width: 100%"
+            border
+            :row-class-name="tableRowClassName"
+          >
             <el-table-column label="时间" prop="time" width="200"></el-table-column>
             <el-table-column label="方法名" prop="method" width="220">
               <template slot-scope="props">
@@ -111,7 +128,7 @@
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="返回值" prop="returnValue">
+      <el-table-column label="返回值/异常堆栈" prop="returnValue">
         <template slot-scope="props">
           <el-tooltip placement="top" effect="light">
             <div slot="content">
@@ -125,7 +142,7 @@
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="耗时" prop="elapsed" width="120"></el-table-column>
+      <el-table-column label="耗时(ms)" prop="elapsed" width="120"></el-table-column>
     </el-table>
     <br>
     <div style="text-align: end;">
@@ -225,7 +242,17 @@ export default {
         sum += x._source.fields.performance[p];
       }
       var paramsHtml = this.syntaxHighlight(x._source.fields.parameters);
-      var returnValueHtml = this.syntaxHighlight(x._source.fields.return_value);
+      var returnValueHtml;
+      var returnValue;
+      if (x._source.fields.error) {
+        returnValue = x._source.fields.error;
+        returnValueHtml = x._source.fields.error;
+      } else {
+        returnValue = x._source.fields.return_value;
+        var returnValueHtml = this.syntaxHighlight(
+          x._source.fields.return_value
+        );
+      }
 
       return {
         time: new Date(
@@ -237,10 +264,17 @@ export default {
         paramsHtml: paramsHtml,
         elapsed: sum.toFixed(4),
         elapsedDetail: x._source.fields.performance,
-        returnValue: x._source.fields.return_value,
+        returnValue: returnValue,
         returnValueHtml: returnValueHtml,
-        tracerId: x._source.fields.tracer_id
+        tracerId: x._source.fields.tracer_id,
+        error: x._source.fields.error
       };
+    },
+    tableRowClassName({ row, index }) {
+      if (row.error) {
+        return "warning-row";
+      }
+      return "";
     },
     syntaxHighlight(json) {
       if (typeof json != "string") {
@@ -329,6 +363,10 @@ pre {
   white-space: nowrap;
   overflow: hidden;
   display: block;
+}
+
+.el-table .warning-row {
+  background: rgb(253, 226, 226);
 }
 </style>
 
