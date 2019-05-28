@@ -30,7 +30,7 @@
       <el-col :span="6">
         <el-form label-width="100px">
           <el-form-item label="异常：">
-            <el-input v-model="methodName"></el-input>
+            <el-checkbox v-model="onlyError" label="只看异常" border></el-checkbox>
           </el-form-item>
         </el-form>
       </el-col>
@@ -40,7 +40,7 @@
     </el-row>
     <el-table
       :data="tableData"
-      style="width: 100%"
+      style="font-size: 12px;width: 100%"
       @expand-change="expandChange"
       :row-class-name="tableRowClassName"
     >
@@ -55,44 +55,41 @@
             <el-table-column label="时间" prop="time" width="200"></el-table-column>
             <el-table-column label="方法名" prop="method" width="220">
               <template slot-scope="props">
-                <el-tooltip placement="top" effect="light">
-                  <div slot="content">
-                    <span>{{props.row.fullMethod}}</span>
-                  </div>
+                <el-popover placement="top" effect="light" trigger="hover">
+                  <span>{{props.row.fullMethod}}</span>
                   <el-button
+                    slot="reference"
                     type="text"
                     class="cut-out"
                     @click="handleCopy(props.row.method,$event)"
                   >{{props.row.method}}</el-button>
-                </el-tooltip>
+                </el-popover>
               </template>
             </el-table-column>
             <el-table-column label="入参" prop="params" width="350">
               <template slot-scope="props">
-                <el-tooltip placement="top" effect="light">
-                  <div slot="content">
-                    <pre v-html="props.row.paramsHtml"></pre>
-                  </div>
+                <el-popover placement="top" effect="light" trigger="click">
+                  <pre v-html="props.row.paramsHtml"></pre>
                   <el-button
+                    slot="reference"
                     type="text"
                     class="cut-out"
                     @click="handleCopy(props.row.params,$event)"
                   >{{props.row.params}}</el-button>
-                </el-tooltip>
+                </el-popover>
               </template>
             </el-table-column>
             <el-table-column label="返回值" prop="returnValue">
               <template slot-scope="props">
-                <el-tooltip placement="top" effect="light">
-                  <div slot="content">
-                    <pre v-html="props.row.returnValueHtml"></pre>
-                  </div>
+                <el-popover placement="top" effect="light" trigger="click">
+                  <pre v-html="props.row.returnValueHtml"></pre>
                   <el-button
+                    slot="reference"
                     type="text"
                     class="cut-out"
                     @click="handleCopy(props.row.returnValue,$event)"
                   >{{props.row.returnValue}}</el-button>
-                </el-tooltip>
+                </el-popover>
               </template>
             </el-table-column>
             <el-table-column label="耗时" prop="elapsed" width="120"></el-table-column>
@@ -102,44 +99,41 @@
       <el-table-column label="时间" prop="time" width="200"></el-table-column>
       <el-table-column label="方法名" prop="method" width="220">
         <template slot-scope="props">
-          <el-tooltip placement="top" effect="light">
-            <div slot="content">
-              <span>{{props.row.fullMethod}}</span>
-            </div>
+          <el-popover placement="top" effect="light" trigger="hover">
+            <span>{{props.row.fullMethod}}</span>
             <el-button
+              slot="reference"
               type="text"
               class="cut-out"
               @click="handleCopy(props.row.method,$event)"
             >{{props.row.method}}</el-button>
-          </el-tooltip>
+          </el-popover>
         </template>
       </el-table-column>
       <el-table-column label="入参" prop="params" width="450">
         <template slot-scope="props">
-          <el-tooltip placement="top" effect="light">
-            <div slot="content">
-              <pre v-html="props.row.paramsHtml"></pre>
-            </div>
+          <el-popover placement="top" effect="light" trigger="click">
+            <pre v-html="props.row.paramsHtml"></pre>
             <el-button
+              slot="reference"
               type="text"
               class="cut-out"
               @click="handleCopy(props.row.params,$event)"
             >{{props.row.params}}</el-button>
-          </el-tooltip>
+          </el-popover>
         </template>
       </el-table-column>
       <el-table-column label="返回值/异常堆栈" prop="returnValue">
         <template slot-scope="props">
-          <el-tooltip placement="top" effect="light">
-            <div slot="content">
-              <pre v-html="props.row.returnValueHtml"></pre>
-            </div>
+          <el-popover placement="top" effect="light" trigger="click">
+            <pre v-html="props.row.returnValueHtml"></pre>
             <el-button
+              slot="reference"
               type="text"
               class="cut-out"
               @click="handleCopy(props.row.returnValue,$event)"
             >{{props.row.returnValue}}</el-button>
-          </el-tooltip>
+          </el-popover>
         </template>
       </el-table-column>
       <el-table-column label="耗时(ms)" prop="elapsed" width="120"></el-table-column>
@@ -201,7 +195,8 @@ export default {
       total: 0,
       methodName: "",
       timestamp: [],
-      tableData: []
+      tableData: [],
+      onlyError: false
     };
   },
   methods: {
@@ -210,7 +205,7 @@ export default {
     },
     async search(index) {
       var response = await search({
-        size: 10,
+        size: 11,
         index: index,
         form: {
           methodName: this.methodName,
@@ -357,16 +352,15 @@ pre {
 }
 
 .cut-out {
-  line-height: 30px;
-  text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   overflow: hidden;
-  display: block;
 }
 
 .el-table .warning-row {
   background: rgb(253, 226, 226);
+}
+
+.el-button--medium {
+  font-size: 12px !important;
 }
 </style>
 

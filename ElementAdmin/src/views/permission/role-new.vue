@@ -113,6 +113,38 @@ export default {
       const res = await getRoles();
       this.rolesList = res.data;
     },
+    getCheckedKeys(data, keys, key) {
+      var res = [];
+      recursion(data, false);
+      return res;
+      function recursion(arr, isChild) {
+        var aCheck = [];
+        for (var i = 0; i < arr.length; i++) {
+          var obj = arr[i];
+          aCheck[i] = false;
+
+          if (obj.children) {
+            aCheck[i] = recursion(obj.children, true) ? true : aCheck[i];
+            if (aCheck[i]) {
+              res.push(obj[key]);
+            }
+          }
+
+          for (var j = 0; j < keys.length; j++) {
+            if (obj[key] == keys[j]) {
+              aCheck[i] = true;
+              if (res.indexOf(obj[key]) == -1) {
+                res.push(obj[key]);
+              }
+              break;
+            }
+          }
+        }
+        if (isChild) {
+          return aCheck.indexOf(true) != -1;
+        }
+      }
+    },
     // Reshape the routes structure so that it looks the same as the sidebar
     generateRoutes(routes, basePath = "/") {
       const res = [];
@@ -220,7 +252,13 @@ export default {
     },
     async confirmRole() {
       const isEdit = this.dialogType === "edit";
-      const checkedKeys = this.$refs.tree.getCheckedKeys();
+
+      const checkedKeys = this.getCheckedKeys(
+        this.routes,
+        this.$refs.tree.getCheckedKeys(),
+        "routeKey"
+      );
+
       var clone = deepClone(this.role);
       clone.routeKeys = checkedKeys;
 

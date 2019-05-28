@@ -87,7 +87,7 @@ namespace ElementAdmin.Infrastructure.Attributes
                     startTime,
                     traceId,
                     $"{context.ServiceMethod.DeclaringType}.{context.ServiceMethod.Name}",
-                    context.ServiceMethod.Name,
+                    $"{context.ServiceMethod.DeclaringType.Name}.{context.ServiceMethod.Name}",
                     @params.ToJson(),
                     returnValue.ToJson() // todo 尝试转成字典，一方面能解决自我嵌套的问题，但是反射的性能可能较差，或许可以静态缓存
                 };

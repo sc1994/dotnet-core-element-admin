@@ -17,12 +17,21 @@ namespace ElementAdmin.Domain
         private readonly IUserInfoRepository _user;
         private readonly IRoleRouteRepository _roleRoute;
         private readonly IRedisClient _redis;
+        private readonly IRoleRepository _role;
+        private readonly IRouteRepository _route;
 
-        public UserService(IUserInfoRepository user, IRoleRouteRepository roleRoute, IRedisClient redis)
+        public UserService(
+            IUserInfoRepository user,
+            IRoleRouteRepository roleRoute,
+            IRedisClient redis,
+            IRoleRepository role,
+            IRouteRepository route)
         {
             _user = user;
             _roleRoute = roleRoute;
             _redis = redis;
+            _role = role;
+            _route = route;
         }
 
         public async Task<ApiResponse> GetUserInfoByTokenAsync(Guid token)
@@ -53,16 +62,21 @@ namespace ElementAdmin.Domain
             var row = await _user.SaveChangesAsync();
             if (row != 1) return Bad("数据更新异常");
 
-            var roles = user.RolesString.Split(',');
-            var routes = await _roleRoute.WhereAsync(x => roles.Contains(x.Role.RoleKey));
+            var roleKeys = user.RolesString.Split(',');
+            var roles = await _role.WhereAsync(x => roleKeys.Contains(x.RoleKey));
+            var roleIds = roles.Select(x => x.Id);
+            var roleRoutes = await _roleRoute.WhereAsync(x => roleIds.Contains(x.RoleId) && !x.IsDelete);
+            var routeIds = roleRoutes.Select(x => x.RouteId);
+            var routes = await _route.WhereAsync(x => routeIds.Contains(x.Id) && !x.IsDelete);
+
             await _redis.StringSetAsync(UserConst.IdentityKey(laterUser.Entity.Token.ToString()), new IdentityModel
             {
                 Avatar = user.Avatar,
                 CreateAt = user.CreateAt,
                 Introduction = user.Introduction,
                 Name = user.NickName,
-                Roles = roles,
-                Routes = routes.Select(x => x.Route.RouteKey).ToArray(),
+                Roles = roleKeys,
+                Routes = routes.Select(x => x.RouteKey).ToArray(),
                 UpdateAt = user.UpdateAt,
                 Username = user.UserName,
                 Token = laterUser.Entity.Token.ToString()

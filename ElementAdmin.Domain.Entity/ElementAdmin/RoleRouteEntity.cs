@@ -19,17 +19,5 @@ namespace ElementAdmin.Domain.Entity.ElementAdmin
         /// </summary>
         [Column("RRRouteId")]
         public long RouteId { get; set; }
-
-        /// <summary>
-        /// 角色
-        /// </summary>
-        [ForeignKey("RRRoleId")]
-        public RoleEntity Role { get; set; }
-
-        /// <summary>
-        /// 路由
-        /// </summary>
-        [ForeignKey("RRRouteId")]
-        public RouteEntity Route { get; set; }
     }
 }

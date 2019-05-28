@@ -63,8 +63,18 @@ namespace ElementAdmin.Domain
         {
             var roles = await _role.WhereAsync(x => !x.IsDelete);
             var roleIds = roles.Select(x => x.Id);
-            var roleRoutes = await _roleRoute.WhereAsync(x => roleIds.Contains(x.RoleId));
-            var result = roles.Select(x => new RoleModel(x, roleRoutes));
+            var roleRoutes = await _roleRoute.WhereAsync(x => roleIds.Contains(x.RoleId) && !x.IsDelete);
+            var routes = await _route.WhereAsync(x => !x.IsDelete);
+            var bottom = new List<RouteEntity>();
+            foreach (var item in routes)
+            {
+                if (!routes.Any(x => x.ParentRouteKey == item.RouteKey))
+                {
+                    bottom.Add(item);
+                }
+            }
+
+            var result = roles.Select(x => new RoleModel(x, roleRoutes, bottom));
             return Ok(result);
         }
 
@@ -94,7 +104,7 @@ namespace ElementAdmin.Domain
             var row = await _role.SaveChangesAsync();
             if (row < 1) return Bad("更新失败");
 
-            await _roleRoute.RemoveRangeAsync(x => x.RoleId == role.Id && !x.IsDelete);
+            row = await _roleRoute.RemoveRangeAsync(x => x.RoleId == role.Id && !x.IsDelete);
             var last = model.RouteKeys.Select(x => new RoleRouteEntity
             {
                 RoleId = role.Id,

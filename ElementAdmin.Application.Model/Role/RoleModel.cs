@@ -9,13 +9,20 @@ namespace ElementAdmin.Application.Model.Role
     {
         public RoleModel() { }
 
-        public RoleModel(RoleEntity entity, IEnumerable<RoleRouteEntity> roleRoutes)
+        public RoleModel(
+            RoleEntity entity,
+            IEnumerable<RoleRouteEntity> roleRoutes,
+            IEnumerable<RouteEntity> routes)
         {
             Id = entity.Id;
             RoleKey = entity.RoleKey;
             Name = entity.Name;
             Description = entity.Description;
-            RouteKeys = roleRoutes.Where(x => x.RoleId == entity.Id).Select(x => x.RouteId.ToString()).ToArray();
+
+            RouteKeys = roleRoutes
+            .Where(x => x.RoleId == entity.Id)
+            .Where(x => routes.Any(a => a.Id == x.RouteId))
+            .Select(x => x.RouteId.ToString()).ToArray();
         }
 
         public long Id { get; set; }
