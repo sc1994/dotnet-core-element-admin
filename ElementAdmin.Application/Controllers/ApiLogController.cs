@@ -51,7 +51,7 @@ namespace ElementAdmin.Application.Controllers
                 data = data.Replace("{#Timestamp}", "");
             }
 
-            var @string = await SendDataToEs(data);
+            var @string = await SendDataToEs(data, model.Form);
             return Ok(@string);
         }
 
@@ -73,10 +73,18 @@ namespace ElementAdmin.Application.Controllers
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        private async Task<string> SendDataToEs(string data)
+        private async Task<string> SendDataToEs(string data, SearchModel model = null)
         {
+            var index = $"logstash-{DateTime.Today:yyyy.MM.dd}";
+            if (model != null && model.Timestamp != null && model.Timestamp.Length == 2)
+            {
+                do { 
+                    
+                }
+                while ()
+            }
             var baseUrl = _config.GetConnectionString("ElasticsearchConnection");
-            var response = await (baseUrl + $"logstash-{DateTime.Today:yyyy.MM.dd}/logevent/_search") // todo 默认查询今天的
+            var response = await (baseUrl + $"/logevent/_search") // todo 默认查询今天的
                             .WithHeader("Content-Type", "application/json")
                             .PostStringAsync(data);
             return await response.Content.ReadAsStringAsync();

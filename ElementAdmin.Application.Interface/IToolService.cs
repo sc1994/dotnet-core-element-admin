@@ -10,7 +10,7 @@ namespace ElementAdmin.Application.Interface
         /// 初始化路由到数据库
         /// </summary>
         /// <returns></returns>
-        Task<ApiResponse> InitRouteDataAsync(InitRouteDataModel[] routes);
+        Task<ApiResponse> InitRouteDataAsync(RouteDataModel[] routes);
 
         /// <summary>
         /// 获取数据

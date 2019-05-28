@@ -10,6 +10,8 @@ namespace ElementAdmin.Domain.Entity.ElementAdmin
     [Table("EARoles")]
     public class RoleEntity : Entity<long>
     {
+        public RoleEntity() { }
+        
         public const int RoleKeyMinLength = 2;
         public const int RoleKeyMaxLength = 16;
 

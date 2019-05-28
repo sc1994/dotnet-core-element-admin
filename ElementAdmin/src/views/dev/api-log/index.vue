@@ -42,7 +42,11 @@
                   <div slot="content">
                     <span>{{props.row.fullMethod}}</span>
                   </div>
-                  <el-button type="text" class="cut-out">{{props.row.method}}</el-button>
+                  <el-button
+                    type="text"
+                    class="cut-out"
+                    @click="handleCopy(props.row.method,$event)"
+                  >{{props.row.method}}</el-button>
                 </el-tooltip>
               </template>
             </el-table-column>
@@ -52,7 +56,11 @@
                   <div slot="content">
                     <pre v-html="props.row.paramsHtml"></pre>
                   </div>
-                  <el-button type="text" class="cut-out">{{props.row.params}}</el-button>
+                  <el-button
+                    type="text"
+                    class="cut-out"
+                    @click="handleCopy(props.row.params,$event)"
+                  >{{props.row.params}}</el-button>
                 </el-tooltip>
               </template>
             </el-table-column>
@@ -62,7 +70,11 @@
                   <div slot="content">
                     <pre v-html="props.row.returnValueHtml"></pre>
                   </div>
-                  <el-button type="text" class="cut-out">{{props.row.returnValue}}</el-button>
+                  <el-button
+                    type="text"
+                    class="cut-out"
+                    @click="handleCopy(props.row.returnValue,$event)"
+                  >{{props.row.returnValue}}</el-button>
                 </el-tooltip>
               </template>
             </el-table-column>
@@ -77,7 +89,11 @@
             <div slot="content">
               <span>{{props.row.fullMethod}}</span>
             </div>
-            <el-button type="text" class="cut-out">{{props.row.method}}</el-button>
+            <el-button
+              type="text"
+              class="cut-out"
+              @click="handleCopy(props.row.method,$event)"
+            >{{props.row.method}}</el-button>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -87,7 +103,11 @@
             <div slot="content">
               <pre v-html="props.row.paramsHtml"></pre>
             </div>
-            <el-button type="text" class="cut-out">{{props.row.params}}</el-button>
+            <el-button
+              type="text"
+              class="cut-out"
+              @click="handleCopy(props.row.params,$event)"
+            >{{props.row.params}}</el-button>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -97,7 +117,11 @@
             <div slot="content">
               <pre v-html="props.row.returnValueHtml"></pre>
             </div>
-            <el-button type="text" class="cut-out">{{props.row.returnValue}}</el-button>
+            <el-button
+              type="text"
+              class="cut-out"
+              @click="handleCopy(props.row.returnValue,$event)"
+            >{{props.row.returnValue}}</el-button>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -111,6 +135,7 @@
 </template>
 
 <script>
+import clip from "@/utils/clipboard";
 import { search, searchChild } from "@/api/api-log";
 
 export default {
@@ -163,6 +188,9 @@ export default {
     };
   },
   methods: {
+    handleCopy(text, event) {
+      clip(text, event);
+    },
     async search(index) {
       var response = await search({
         size: 10,
@@ -243,6 +271,26 @@ export default {
         }
       );
     }
+  },
+  mounted() {
+    var options = {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      hour12: false
+    };
+
+    var start = new Date();
+    start.setTime(start.getTime() - 3600 * 500);
+
+    this.timestamp = [
+      new Intl.DateTimeFormat("ZH-cn", options).format(start),
+      new Intl.DateTimeFormat("ZH-cn", options).format(new Date())
+    ];
+    this.search(1);
   }
 };
 </script>

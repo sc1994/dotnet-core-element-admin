@@ -18,7 +18,7 @@ namespace ElementAdmin.Application.Controllers
         }
 
         [HttpPost("initroutedata")]
-        public async Task<ApiResponse> InitRouteData(InitRouteDataModel[] routes)
+        public async Task<ApiResponse> InitRouteData(RouteDataModel[] routes)
         {
             return await _tools.InitRouteDataAsync(routes);
         }

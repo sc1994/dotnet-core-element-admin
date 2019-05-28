@@ -21,7 +21,7 @@ namespace ElementAdmin.Domain
             _route = route;
         }
 
-        public async Task<ApiResponse> InitRouteDataAsync(InitRouteDataModel[] routes)
+        public async Task<ApiResponse> InitRouteDataAsync(RouteDataModel[] routes)
         {
             var routeEntities = new List<RouteEntity>();
             foreach (var item in routes)
@@ -45,7 +45,7 @@ namespace ElementAdmin.Domain
             return await Task.FromResult(Ok(rows));
         }
 
-        private void FlatChildrenData(string pKey, InitRouteDataModel item, ref List<RouteEntity> result)
+        private void FlatChildrenData(string pKey, RouteDataModel item, ref List<RouteEntity> result)
         {
             if (item.Children?.Any() ?? false)
             {

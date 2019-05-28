@@ -29,3 +29,10 @@ export function deleteRole(id) {
     method: 'delete'
   })
 }
+
+export function getRoutes() {
+  return request({
+    url: '/role/getroutes',
+    method: 'get'
+  })
+}
