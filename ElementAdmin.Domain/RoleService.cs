@@ -21,7 +21,8 @@ namespace ElementAdmin.Domain
         public async Task<ApiResponse> AddRoleAsync(RoleModel model)
         {
             await _role.AddAsync(model.ToRoleEntity());
-_roleRoute.AddRangeAsync
+            // _roleRoute.AddRangeAsync
+            throw new System.NotImplementedException();
         }
 
         public Task<ApiResponse> DeleteRoleAsync(long id)
