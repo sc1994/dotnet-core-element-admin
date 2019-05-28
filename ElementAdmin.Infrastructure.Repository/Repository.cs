@@ -86,6 +86,10 @@ namespace ElementAdmin.Infrastructure.Repository
         public abstract Task<IEnumerable<TEntity>> WhereAsync(Expression<Func<TEntity, bool>> expression);
 
         public abstract Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> expression);
+
+        public abstract Task<int> RemoveRangeAsync(Expression<Func<TEntity, bool>> expression);
+
+        public abstract Task<int> UpdateRangeAsync(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TEntity>> updator);
     }
 
     public abstract class Repository<TId, TEntity, TContext> : Repository<TEntity, TContext>, IRepository<TId, TEntity>

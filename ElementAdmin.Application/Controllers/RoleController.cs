@@ -36,7 +36,7 @@ namespace ElementAdmin.Application.Controllers
             return await _role.AddRoleAsync(model);
         }
 
-        [HttpPut]
+        [HttpPut("{key}")]
         public async Task<ApiResponse> UpdateRole(RoleModel model)
         {
             return await _role.UpdateRoleAsync(model);

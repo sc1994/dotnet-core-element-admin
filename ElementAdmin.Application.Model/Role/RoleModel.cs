@@ -11,11 +11,14 @@ namespace ElementAdmin.Application.Model.Role
 
         public RoleModel(RoleEntity entity, IEnumerable<RoleRouteEntity> roleRoutes)
         {
+            Id = entity.Id;
             RoleKey = entity.RoleKey;
             Name = entity.Name;
             Description = entity.Description;
             RouteKeys = roleRoutes.Where(x => x.RoleId == entity.Id).Select(x => x.RouteId.ToString()).ToArray();
         }
+
+        public long Id { get; set; }
 
         /// <summary>
         /// 角色
@@ -49,6 +52,7 @@ namespace ElementAdmin.Application.Model.Role
         {
             return new RoleEntity
             {
+                Id = Id,
                 RoleKey = RoleKey,
                 Name = Name,
                 Description = Description

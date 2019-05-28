@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using ElementAdmin.Domain.Entity.ElementAdmin;
 using ElementAdmin.Domain.Interface.ElementAdmin;
 using ElementAdmin.Infrastructure.Data.Context;
+using Z.EntityFramework.Extensions;
 
 namespace ElementAdmin.Infrastructure.Repository.ElementAdmin
 {
@@ -27,6 +28,20 @@ namespace ElementAdmin.Infrastructure.Repository.ElementAdmin
         public override async Task<RouteEntity> FindAsync(Expression<Func<RouteEntity, bool>> expression)
         {
             return await _context.RouteEntity.FirstOrDefaultAsync(expression);
+        }
+
+        public override async Task<int> RemoveRangeAsync(Expression<Func<RouteEntity, bool>> expression)
+        {
+            return await _context.RouteEntity.Where(expression).UpdateFromQueryAsync(x => new RouteEntity
+            {
+                IsDelete = true,
+                DeleteAt = DateTime.Now
+            });
+        }
+
+        public override async Task<int> UpdateRangeAsync(Expression<Func<RouteEntity, bool>> expression, Expression<Func<RouteEntity, RouteEntity>> updator)
+        {
+            return await _context.RouteEntity.Where(expression).UpdateFromQueryAsync(updator);
         }
     }
 }

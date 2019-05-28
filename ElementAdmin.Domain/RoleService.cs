@@ -26,7 +26,7 @@ namespace ElementAdmin.Domain
 
         public async Task<ApiResponse> AddRoleAsync(RoleModel model)
         {
-            var first = await _role.FindAsync(x => x.RoleKey == model.RoleKey);
+            var first = await _role.FindAsync(x => x.RoleKey == model.RoleKey && !x.IsDelete);
             if (first != null)
             {
                 return Bad($"已存在 【{model.RoleKey}】 角色");
@@ -46,9 +46,17 @@ namespace ElementAdmin.Domain
             return Ok();
         }
 
-        public Task<ApiResponse> DeleteRoleAsync(long id)
+        public async Task<ApiResponse> DeleteRoleAsync(long id)
         {
-            throw new System.NotImplementedException();
+            var role = await _role.FindAsync(x => x.Id == id && !x.IsDelete);
+            if (role == null) return Bad("不存在数据");
+
+            await _role.RemoveAsync(role);
+            var row = await _role.SaveChangesAsync();
+            if (row < 1) return Bad("更新失败");
+            row = await _roleRoute.RemoveRangeAsync(x => x.RoleId == role.Id && !x.IsDelete);
+
+            return Ok(row);
         }
 
         public async Task<ApiResponse> GetRolesAsync()
@@ -74,9 +82,27 @@ namespace ElementAdmin.Domain
             return Ok(result);
         }
 
-        public Task<ApiResponse> UpdateRoleAsync(RoleModel model)
+        public async Task<ApiResponse> UpdateRoleAsync(RoleModel model)
         {
-            throw new System.NotImplementedException();
+            // 全量的删除新增
+            var role = await _role.FindAsync(x => x.RoleKey == model.RoleKey && !x.IsDelete);
+            if (role == null) return Bad("不存在数据");
+
+            role.Name = model.Name;
+            role.Description = model.Description;
+            await _role.UpdateAsync(role);
+            var row = await _role.SaveChangesAsync();
+            if (row < 1) return Bad("更新失败");
+
+            await _roleRoute.RemoveRangeAsync(x => x.RoleId == role.Id && !x.IsDelete);
+            var last = model.RouteKeys.Select(x => new RoleRouteEntity
+            {
+                RoleId = role.Id,
+                RouteId = Convert.ToInt16(x)
+            });
+            await _roleRoute.AddRangeAsync(last);
+
+            return Ok(await _roleRoute.SaveChangesAsync());
         }
 
         private void AggRouteChildren(RouteEntity item, RouteTreeModel tree, IEnumerable<RouteEntity> all)

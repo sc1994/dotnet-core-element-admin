@@ -58,6 +58,14 @@ namespace ElementAdmin.Domain.Interface
         Task RemoveRangeAsync(IEnumerable<TEntity> entities, bool reallyRemove = false);
 
         /// <summary>
+        /// 批量移除（字段标识）
+        /// </summary>
+        /// <param name="expression">条件</param>
+        /// <param name="reallyRemove">实际删除</param>
+        /// <returns></returns>
+        Task<int> RemoveRangeAsync(Expression<Func<TEntity, bool>> expression);
+
+        /// <summary>
         /// 更新
         /// </summary>
         /// <param name="entity"></param>
@@ -70,6 +78,14 @@ namespace ElementAdmin.Domain.Interface
         /// <param name="entities"></param>
         /// <returns></returns>
         Task UpdateRangeAsync(IEnumerable<TEntity> entities);
+
+        /// <summary>
+        /// 批量更新
+        /// </summary>
+        /// <param name="expression">条件</param>
+        /// <param name="updator">更新字段</param>
+        /// <returns></returns>
+        Task<int> UpdateRangeAsync(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TEntity>> updator);
 
         /// <summary>
         /// 筛选查找
