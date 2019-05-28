@@ -10,6 +10,7 @@ namespace ElementAdmin.Infrastructure.IoC
         {
             service.AddScoped<IToolService, ToolService>();
             service.AddScoped<IUserService, UserService>();
+            service.AddScoped<IRoleService, RoleService>();
         }
     }
 }

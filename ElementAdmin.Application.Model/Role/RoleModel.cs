@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using ElementAdmin.Application.Model.Tools;
 using ElementAdmin.Domain.Entity.ElementAdmin;
@@ -6,11 +7,21 @@ namespace ElementAdmin.Application.Model.Role
 {
     public class RoleModel
     {
+        public RoleModel() { }
+
+        public RoleModel(RoleEntity entity, IEnumerable<RoleRouteEntity> roleRoutes)
+        {
+            RoleKey = entity.RoleKey;
+            Name = entity.Name;
+            Description = entity.Description;
+            RouteKeys = roleRoutes.Where(x => x.RoleId == entity.Id).Select(x => x.RouteId.ToString()).ToArray();
+        }
+
         /// <summary>
         /// 角色
         /// </summary>
         /// <value></value>
-        public string Key { get; set; }
+        public string RoleKey { get; set; }
 
         /// <summary>
         /// 名称
@@ -28,7 +39,7 @@ namespace ElementAdmin.Application.Model.Role
         /// 路由权限
         /// </summary>
         /// <value></value>
-        public RouteDataModel[] Routes { get; set; }
+        public string[] RouteKeys { get; set; }
 
         /// <summary>
         /// 转到路由实体
@@ -38,19 +49,10 @@ namespace ElementAdmin.Application.Model.Role
         {
             return new RoleEntity
             {
-                RoleKey = Key,
+                RoleKey = RoleKey,
                 Name = Name,
                 Description = Description
             };
-        }
-
-        public RouteEntity[] ToRouteEntities()
-        {
-            return Routes.Select(x => new RouteEntity
-            {
-                RouteKey = x.Name,
-
-            }).ToArray();
         }
     }
 }
