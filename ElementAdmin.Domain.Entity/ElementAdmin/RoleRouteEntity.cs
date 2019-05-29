@@ -11,13 +11,13 @@ namespace ElementAdmin.Domain.Entity.ElementAdmin
         /// <summary>
         /// 角色外键
         /// </summary>
-        [Column("RRRoleId")]
-        public long RoleId { get; set; }
+        [Column("RRRoleKey")]
+        public string RoleKey { get; set; }
 
         /// <summary>
         /// 路由外键
         /// </summary>
-        [Column("RRRouteId")]
-        public long RouteId { get; set; }
+        [Column("RRRouteKey")]
+        public string RouteKey { get; set; }
     }
 }

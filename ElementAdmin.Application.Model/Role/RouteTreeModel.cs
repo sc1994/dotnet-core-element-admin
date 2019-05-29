@@ -13,7 +13,7 @@ namespace ElementAdmin.Application.Model.Role
 
         public RouteTreeModel(RouteEntity entity)
         {
-            RouteKey = entity.Id.ToString();
+            RouteKey = entity.RouteKey.ToString();
             Name = entity.Name;
         }
 

@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ElementAdmin.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ElementAdminContext))]
-    [Migration("20190528095709_Init_20190528175704_other")]
-    partial class Init_20190528175704_other
+    [Migration("20190529111318_Init_20190529191314_1")]
+    partial class Init_20190529191314_1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -66,11 +66,11 @@ namespace ElementAdmin.Infrastructure.Data.Migrations
 
                     b.Property<bool>("IsDelete");
 
-                    b.Property<long>("RoleId")
-                        .HasColumnName("RRRoleId");
+                    b.Property<string>("RoleKey")
+                        .HasColumnName("RRRoleKey");
 
-                    b.Property<long>("RouteId")
-                        .HasColumnName("RRRouteId");
+                    b.Property<string>("RouteKey")
+                        .HasColumnName("RRRouteKey");
 
                     b.Property<DateTime>("UpdateAt")
                         .ValueGeneratedOnAddOrUpdate();

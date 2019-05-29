@@ -28,5 +28,12 @@ namespace ElementAdmin.Application.Interface
         /// <param name="identity"></param>
         /// <returns></returns>
         Task<ApiResponse> LogoutAsync([Identity] IdentityModel identity = null);
+
+        /// <summary>
+        /// 注册
+        /// </summary>
+        /// <param name="register"></param>
+        /// <returns></returns>
+        Task<ApiResponse> LogUpUserAsync(RegisterUserInfo register);
     }
 }

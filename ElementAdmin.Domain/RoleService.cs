@@ -29,13 +29,13 @@ namespace ElementAdmin.Domain
         {
             var first = await _role.FindAsync(x => x.RoleKey == model.RoleKey && !x.IsDelete);
             if (!model.VerifyAdd(first)) return Bad(model.VerifyMessgae);
-           
+
             var role = await _role.AddAsync(model.ToRoleEntity());
             await _role.SaveChangesAsync();
             var routeEntities = model.RouteKeys.Select(x => new RoleRouteEntity
             {
-                RoleId = role.Entity.Id,
-                RouteId = Convert.ToInt64(x)
+                RoleKey = role.Entity.RoleKey,
+                RouteKey = x
             });
             if (routeEntities.Any())
             {
@@ -53,7 +53,7 @@ namespace ElementAdmin.Domain
             await _role.RemoveAsync(role);
             var row = await _role.SaveChangesAsync();
             if (row < 1) return Bad("删除失败");
-            row = await _roleRoute.RemoveRangeAsync(x => x.RoleId == role.Id && !x.IsDelete);
+            row = await _roleRoute.RemoveRangeAsync(x => x.RoleKey == role.RoleKey && !x.IsDelete);
 
             return Ok(row);
         }
@@ -61,8 +61,8 @@ namespace ElementAdmin.Domain
         public async Task<ApiResponse> GetRolesAsync()
         {
             var roles = await _role.WhereAsync(x => !x.IsDelete);
-            var roleIds = roles.Select(x => x.Id);
-            var roleRoutes = await _roleRoute.WhereAsync(x => roleIds.Contains(x.RoleId) && !x.IsDelete);
+            var roleKeys = roles.Select(x => x.RoleKey);
+            var roleRoutes = await _roleRoute.WhereAsync(x => roleKeys.Contains(x.RoleKey) && !x.IsDelete);
             var routes = await _route.WhereAsync(x => !x.IsDelete);
             var bottom = new List<RouteEntity>();
             foreach (var item in routes)
@@ -106,11 +106,11 @@ namespace ElementAdmin.Domain
                 if (await _role.SaveChangesAsync() < 1) return Bad("更新失败");
             }
 
-            var row = await _roleRoute.RemoveRangeAsync(x => x.RoleId == role.Id && !x.IsDelete);
+            var row = await _roleRoute.RemoveRangeAsync(x => x.RoleKey == role.RoleKey && !x.IsDelete);
             var last = model.RouteKeys.Select(x => new RoleRouteEntity
             {
-                RoleId = role.Id,
-                RouteId = Convert.ToInt16(x)
+                RoleKey = role.RoleKey,
+                RouteKey = x
             });
             await _roleRoute.AddRangeAsync(last);
 

@@ -22,9 +22,9 @@ namespace ElementAdmin.Application.Model.Role
             Description = entity.Description;
 
             RouteKeys = roleRoutes
-            .Where(x => x.RoleId == entity.Id)
-            .Where(x => routes.Any(a => a.Id == x.RouteId))
-            .Select(x => x.RouteId.ToString()).ToArray();
+            .Where(x => x.RoleKey == entity.RoleKey)
+            .Where(x => routes.Any(a => a.RouteKey == x.RouteKey))
+            .Select(x => x.RouteKey).ToArray();
         }
 
         public long Id { get; set; }

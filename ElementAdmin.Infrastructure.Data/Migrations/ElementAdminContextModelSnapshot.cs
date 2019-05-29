@@ -64,11 +64,11 @@ namespace ElementAdmin.Infrastructure.Data.Migrations
 
                     b.Property<bool>("IsDelete");
 
-                    b.Property<long>("RoleId")
-                        .HasColumnName("RRRoleId");
+                    b.Property<string>("RoleKey")
+                        .HasColumnName("RRRoleKey");
 
-                    b.Property<long>("RouteId")
-                        .HasColumnName("RRRouteId");
+                    b.Property<string>("RouteKey")
+                        .HasColumnName("RRRouteKey");
 
                     b.Property<DateTime>("UpdateAt")
                         .ValueGeneratedOnAddOrUpdate();

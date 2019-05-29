@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ElementAdmin.Infrastructure.Data.Migrations
 {
-    public partial class Init_20190528175704_other : Migration
+    public partial class Init_20190529191314_1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -20,8 +20,8 @@ namespace ElementAdmin.Infrastructure.Data.Migrations
                     UpdateAt = table.Column<DateTime>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.ComputedColumn),
                     DeleteAt = table.Column<DateTime>(nullable: false),
-                    RRRoleId = table.Column<long>(nullable: false),
-                    RRRouteId = table.Column<long>(nullable: false)
+                    RRRoleKey = table.Column<string>(nullable: true),
+                    RRRouteKey = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

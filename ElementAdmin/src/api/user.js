@@ -21,3 +21,12 @@ export function logout() {
     method: 'post'
   })
 }
+
+
+export function logup(data){
+  return request({
+    url: '/user/logup',
+    method: 'post',
+    data
+  })
+}

@@ -33,7 +33,7 @@ export function filterAsyncRoutes(routes, data) {
       if (data.routes.findIndex(x => x == route.name) > -1) {
         route.meta.roles = [...roles]
       } else if (route.meta) {
-        route.meta.roles = ["noroles", 'dev']
+        route.meta.roles = ["noroles"]
       }
     }
     const tmp = {

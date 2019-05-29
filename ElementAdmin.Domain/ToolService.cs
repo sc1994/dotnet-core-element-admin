@@ -29,16 +29,12 @@ namespace ElementAdmin.Domain
                 FlatChildrenData("", item, ref routeEntities);
             }
 
-            var old = (await _route.WhereAsync(x => !x.IsDelete)).ToArray();
+            // 全量的删除添加
+            var all = await _route.WhereAsync(x => x.Id > 0);
             // 删除
-            var removeKeys = old.Select(x => x.RouteKey).Except(routeEntities.Select(x => x.RouteKey));
-            await _route.RemoveRangeAsync(old.Where(x => removeKeys.Contains(x.RouteKey)), true);
+            await _route.RemoveRangeAsync(all, true);
             // 添加
-            var addKeys = routeEntities.Select(x => x.RouteKey).Except(old.Select(x => x.RouteKey));
-            await _route.AddRangeAsync(routeEntities.Where(x => addKeys.Contains(x.RouteKey)));
-            // 更新
-            var updateKeys = old.Select(x => x.RouteKey).Intersect(routeEntities.Select(x => x.RouteKey));
-            await _route.UpdateRangeAsync(old.Where(x => updateKeys.Contains(x.RouteKey)));
+            await _route.AddRangeAsync(routeEntities);
             // 保存
             var rows = await _route.SaveChangesAsync();
 

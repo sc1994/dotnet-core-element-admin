@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using ElementAdmin.Application.Interface;
 using ElementAdmin.Application.Model;
 using ElementAdmin.Application.Model.Identity;
+using ElementAdmin.Domain.Entity.ElementAdmin;
 using ElementAdmin.Domain.Interface.ElementAdmin;
 using ElementAdmin.Infrastructure.Attributes;
 using ElementAdmin.Infrastructure.Redis;
@@ -52,6 +53,26 @@ namespace ElementAdmin.Domain
 
         public async Task<ApiResponse> LoginAsync(RegisterUserInfo register)
         {
+            if (register.Username == "admin") // 默认用户
+            {
+                var token = Guid.NewGuid();
+                await _redis.StringSetAsync(UserConst.IdentityKey(token.ToString()), new IdentityModel
+                {
+                    Avatar = "https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2922170376,2371336021&fm=27&gp=0.jpg",
+                    CreateAt = DateTime.Now,
+                    Introduction = "我是默认管理员",
+                    Name = "管理员",
+                    Roles = new[] { "admin" },
+                    Routes = new[] { "Permission", "RolePermission", "UserPermission" },
+                    UpdateAt = DateTime.Now,
+                    Username = "admin",
+                    Token = token.ToString()
+                }, DateTime.Today.AddDays(7) - DateTime.Now);
+                return Ok<object>(new { token = token });
+            }
+
+            if (!register.VerifyLogin()) return Bad(register.VerifyMessage);
+
             var user = await _user.FindAsync(x => x.UserName == register.Username && x.Password == register.Password);
             if (user == null) return Bad("用户名或者密码错误");
             if (user.IsDelete) return Bad("此账号已被删除");
@@ -63,11 +84,9 @@ namespace ElementAdmin.Domain
             if (row != 1) return Bad("数据更新异常");
 
             var roleKeys = user.RolesString.Split(',');
-            var roles = await _role.WhereAsync(x => roleKeys.Contains(x.RoleKey));
-            var roleIds = roles.Select(x => x.Id);
-            var roleRoutes = await _roleRoute.WhereAsync(x => roleIds.Contains(x.RoleId) && !x.IsDelete);
-            var routeIds = roleRoutes.Select(x => x.RouteId);
-            var routes = await _route.WhereAsync(x => routeIds.Contains(x.Id) && !x.IsDelete);
+            var roleRoutes = await _roleRoute.WhereAsync(x => roleKeys.Contains(x.RoleKey) && !x.IsDelete);
+            var routeKeys = roleRoutes.Select(x => x.RouteKey);
+            var routes = await _route.WhereAsync(x => routeKeys.Contains(x.RouteKey) && !x.IsDelete);
 
             await _redis.StringSetAsync(UserConst.IdentityKey(laterUser.Entity.Token.ToString()), new IdentityModel
             {
@@ -82,6 +101,27 @@ namespace ElementAdmin.Domain
                 Token = laterUser.Entity.Token.ToString()
             }, DateTime.Today.AddDays(7) - DateTime.Now);
             return Ok<object>(new { token = laterUser.Entity.Token });
+        }
+
+        public async Task<ApiResponse> LogUpUserAsync(RegisterUserInfo register)
+        {
+            var flag = await _user.FindAsync(x => x.UserName == register.Username && !x.IsDelete);
+            if (!register.VerifyLogUp(flag)) return Bad(register.VerifyMessage);
+
+            await _user.AddAsync(new UserInfoEntity
+            {
+                Avatar = "http://img2.imgtn.bdimg.com/it/u=3937854204,4209154356&fm=11&gp=0.jpg",
+                UserName = register.Username,
+                NickName = register.Username,
+                Password = register.Password,
+                RolesString = "base",
+                Token = Guid.NewGuid(),
+                Introduction = "初来乍到"
+            });
+            if (await _user.SaveChangesAsync() > 0)
+                return Ok();
+            else
+                return Bad("注册异常");
         }
     }
 }

@@ -6,7 +6,7 @@ const permissionRoutes = {
   redirect: '/permission/page',
   name: 'Permission',
   meta: {
-    title: '角色权限',
+    title: '权限管理',
     icon: 'lock'
   },
   children: [{
@@ -14,7 +14,14 @@ const permissionRoutes = {
     component: () => import('@/views/permission/role-new'),
     name: 'RolePermission',
     meta: {
-      title: '角色权限'
+      title: '角色管理'
+    }
+  }, {
+    path: 'user',
+    component: () => import('@/views/permission/user'),
+    name: 'UserPermission',
+    meta: {
+      title: '用户管理'
     }
   }]
 }

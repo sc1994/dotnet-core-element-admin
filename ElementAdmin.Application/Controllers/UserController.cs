@@ -21,23 +21,47 @@ namespace ElementAdmin.Application.Controllers
             _user = user;
         }
 
+        /// <summary>
+        /// 登录
+        /// </summary>
+        /// <param name="register"></param>
+        /// <returns></returns>
         [HttpPost("login")]
         public async Task<ApiResponse> LoginUser(RegisterUserInfo register)
         {
             return await _user.LoginAsync(register);
         }
 
+        /// <summary>
+        /// 获取信息
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         [HttpGet("{token}")]
         public async Task<ApiResponse> GetUserByToken(Guid token)
         {
             return await _user.GetUserInfoByTokenAsync(token);
         }
 
+        /// <summary>
+        /// 登出
+        /// </summary>
+        /// <returns></returns>
         [HttpPost("logout")]
         public async Task<ApiResponse> LogoutUser()
         {
-            var a = await _user.LogoutAsync();
-            return Ok();
+            return await _user.LogoutAsync();
+
+        }
+        /// <summary>
+        /// 注册
+        /// </summary>
+        /// <param name="register"></param>
+        /// <returns></returns>
+        [HttpPost("logup")]
+        public async Task<ApiResponse> LogUpUser(RegisterUserInfo register)
+        {
+            return await _user.LogUpUserAsync(register);
         }
     }
 }
