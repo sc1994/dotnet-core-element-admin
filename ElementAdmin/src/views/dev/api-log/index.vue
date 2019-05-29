@@ -41,62 +41,13 @@
     <el-table
       :data="tableData"
       style="font-size: 12px;width: 100%"
-      @expand-change="expandChange"
       :row-class-name="tableRowClassName"
+      v-loading="loading"
+      row-key="id"
+      lazy
+      :load="expandChange"
     >
-      <el-table-column type="expand">
-        <template slot-scope="props">
-          <el-table
-            :data="props.row.tableData"
-            style="width: 100%"
-            border
-            :row-class-name="tableRowClassName"
-          >
-            <el-table-column label="时间" prop="time" width="200"></el-table-column>
-            <el-table-column label="方法名" prop="method" width="220">
-              <template slot-scope="props">
-                <el-popover placement="top" effect="light" trigger="hover">
-                  <span>{{props.row.fullMethod}}</span>
-                  <el-button
-                    slot="reference"
-                    type="text"
-                    class="cut-out"
-                    @click="handleCopy(props.row.method,$event)"
-                  >{{props.row.method}}</el-button>
-                </el-popover>
-              </template>
-            </el-table-column>
-            <el-table-column label="入参" prop="params" width="350">
-              <template slot-scope="props">
-                <el-popover placement="top" effect="light" trigger="click">
-                  <pre v-html="props.row.paramsHtml"></pre>
-                  <el-button
-                    slot="reference"
-                    type="text"
-                    class="cut-out"
-                    @click="handleCopy(props.row.params,$event)"
-                  >{{props.row.params}}</el-button>
-                </el-popover>
-              </template>
-            </el-table-column>
-            <el-table-column label="返回值" prop="returnValue">
-              <template slot-scope="props">
-                <el-popover placement="top" effect="light" trigger="click">
-                  <pre v-html="props.row.returnValueHtml"></pre>
-                  <el-button
-                    slot="reference"
-                    type="text"
-                    class="cut-out"
-                    @click="handleCopy(props.row.returnValue,$event)"
-                  >{{props.row.returnValue}}</el-button>
-                </el-popover>
-              </template>
-            </el-table-column>
-            <el-table-column label="耗时" prop="elapsed" width="120"></el-table-column>
-          </el-table>
-        </template>
-      </el-table-column>
-      <el-table-column label="时间" prop="time" width="200"></el-table-column>
+      <el-table-column label="时间" prop="time" width="230"></el-table-column>
       <el-table-column label="方法名" prop="method" width="220">
         <template slot-scope="props">
           <el-popover placement="top" effect="light" trigger="hover">
@@ -140,7 +91,12 @@
     </el-table>
     <br>
     <div style="text-align: end;">
-      <el-pagination background layout="prev, pager, next" :total="total" @current-change="search"></el-pagination>
+      <el-pagination
+        background
+        layout="total, prev, pager, next"
+        :total="total"
+        @current-change="search"
+      ></el-pagination>
     </div>
   </div>
 </template>
@@ -196,7 +152,8 @@ export default {
       methodName: "",
       timestamp: [],
       tableData: [],
-      onlyError: false
+      onlyError: false,
+      loading: false
     };
   },
   methods: {
@@ -204,6 +161,7 @@ export default {
       clip(text, event);
     },
     async search(index) {
+      this.loading = true;
       var response = await search({
         size: 11,
         index: index,
@@ -217,19 +175,23 @@ export default {
       console.log(data);
       this.total = data.hits.total;
       data.hits.hits.forEach(x => {
-        this.tableData.push(this.esToTable(x));
+        let temp = this.esToTable(x);
+        temp.hasChildren = true;
+        this.tableData.push(temp);
       });
+      this.loading = false;
     },
-    async expandChange(row) {
-      if (!row.tableData) {
-        row.tableData = [];
-        var response = await searchChild(row.tracerId);
-        var data = JSON.parse(response.data);
-        console.log(data);
-        data.hits.hits.forEach(x => {
-          row.tableData.push(this.esToTable(x));
-        });
-      }
+    async expandChange(tree, treeNode, resolve) {
+      let that = [];
+      let response = await searchChild(tree.tracerId);
+      let data = JSON.parse(response.data);
+      console.log(data);
+      data.hits.hits.forEach(x => {
+        var temp = this.esToTable(x);
+        console.log(temp);
+        that.push(temp);
+      });
+      resolve(that);
     },
     esToTable(x) {
       var sum = 0;
@@ -250,6 +212,7 @@ export default {
       }
 
       return {
+        id: x._id,
         time: new Date(
           (x._source.fields.start_timestamp - 621355968000000000) / 10000
         ).toISOString(),
@@ -268,6 +231,9 @@ export default {
     tableRowClassName({ row, index }) {
       if (row.error) {
         return "warning-row";
+      }
+      if (!row.hasChildren) {
+        return "children-row";
       }
       return "";
     },
@@ -357,6 +323,10 @@ pre {
 
 .el-table .warning-row {
   background: rgb(253, 226, 226);
+}
+
+.el-table .children-row {
+  background: rgb(225, 243, 216);
 }
 
 .el-button--medium {
