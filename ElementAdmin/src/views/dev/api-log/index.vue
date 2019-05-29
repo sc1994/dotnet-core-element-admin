@@ -187,9 +187,7 @@ export default {
       let data = JSON.parse(response.data);
       console.log(data);
       data.hits.hits.forEach(x => {
-        var temp = this.esToTable(x);
-        console.log(temp);
-        that.push(temp);
+        that.push(this.esToTable(x));
       });
       resolve(that);
     },

@@ -7,6 +7,7 @@ using ElementAdmin.Application.Model;
 using ElementAdmin.Application.Model.Role;
 using ElementAdmin.Domain.Entity.ElementAdmin;
 using ElementAdmin.Domain.Interface.ElementAdmin;
+using ElementAdmin.Infrastructure;
 using static ElementAdmin.Application.Model.ApiResponse;
 
 namespace ElementAdmin.Domain
@@ -27,10 +28,8 @@ namespace ElementAdmin.Domain
         public async Task<ApiResponse> AddRoleAsync(RoleModel model)
         {
             var first = await _role.FindAsync(x => x.RoleKey == model.RoleKey && !x.IsDelete);
-            if (first != null)
-            {
-                return Bad($"已存在 【{model.RoleKey}】 角色");
-            }
+            if (!model.VerifyAdd(first)) return Bad(model.VerifyMessgae);
+           
             var role = await _role.AddAsync(model.ToRoleEntity());
             await _role.SaveChangesAsync();
             var routeEntities = model.RouteKeys.Select(x => new RoleRouteEntity
@@ -49,11 +48,11 @@ namespace ElementAdmin.Domain
         public async Task<ApiResponse> DeleteRoleAsync(long id)
         {
             var role = await _role.FindAsync(x => x.Id == id && !x.IsDelete);
-            if (role == null) return Bad("不存在数据");
+            if (RoleModel.VerifyDelete(role)) return Bad("不存在数据");
 
             await _role.RemoveAsync(role);
             var row = await _role.SaveChangesAsync();
-            if (row < 1) return Bad("更新失败");
+            if (row < 1) return Bad("删除失败");
             row = await _roleRoute.RemoveRangeAsync(x => x.RoleId == role.Id && !x.IsDelete);
 
             return Ok(row);
@@ -96,15 +95,18 @@ namespace ElementAdmin.Domain
         {
             // 全量的删除新增
             var role = await _role.FindAsync(x => x.RoleKey == model.RoleKey && !x.IsDelete);
-            if (role == null) return Bad("不存在数据");
+            var verify = model.VerifyUpdate(role);
+            if (verify == VerifyUpdateEnum.Fail) return Bad(model.VerifyMessgae);
 
-            role.Name = model.Name;
-            role.Description = model.Description;
-            await _role.UpdateAsync(role);
-            var row = await _role.SaveChangesAsync();
-            if (row < 1) return Bad("更新失败");
+            if (verify == VerifyUpdateEnum.Need)
+            {
+                role.Name = model.Name;
+                role.Description = model.Description;
+                await _role.UpdateAsync(role);
+                if (await _role.SaveChangesAsync() < 1) return Bad("更新失败");
+            }
 
-            row = await _roleRoute.RemoveRangeAsync(x => x.RoleId == role.Id && !x.IsDelete);
+            var row = await _roleRoute.RemoveRangeAsync(x => x.RoleId == role.Id && !x.IsDelete);
             var last = model.RouteKeys.Select(x => new RoleRouteEntity
             {
                 RoleId = role.Id,
