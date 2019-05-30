@@ -35,5 +35,12 @@ namespace ElementAdmin.Application.Interface
         /// <param name="register"></param>
         /// <returns></returns>
         Task<ApiResponse> LogUpUserAsync(RegisterUserInfo register);
+
+        /// <summary>
+        /// 搜索
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<ApiResponse> SearchUserAsync(SearchUserModel model);
     }
 }

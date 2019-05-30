@@ -23,10 +23,18 @@ export function logout() {
 }
 
 
-export function logup(data){
+export function logup(data) {
   return request({
     url: '/user/logup',
     method: 'post',
+    data
+  })
+}
+
+export function searchUser(data) {
+  return request({
+    url: "/user/search",
+    method: "post",
     data
   })
 }

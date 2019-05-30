@@ -63,5 +63,16 @@ namespace ElementAdmin.Application.Controllers
         {
             return await _user.LogUpUserAsync(register);
         }
+
+        /// <summary>
+        /// 搜索
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("search")]
+        public async Task<ApiResponse> SearchUser(SearchUserModel model)
+        {
+            return await _user.SearchUserAsync(model);
+        }
     }
 }

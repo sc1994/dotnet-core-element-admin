@@ -123,5 +123,10 @@ namespace ElementAdmin.Domain
             else
                 return Bad("注册异常");
         }
+
+        public Task<ApiResponse> SearchUserAsync(SearchUserModel model)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
