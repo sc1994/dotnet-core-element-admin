@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Security.Authentication;
+using System.Linq;
 using System;
 using System.Threading.Tasks;
 using AspectCore.DynamicProxy;
@@ -8,6 +9,7 @@ using ElementAdmin.Infrastructure.Redis.RedisConst;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text;
 
 namespace ElementAdmin.Infrastructure.Attributes
 {
@@ -26,7 +28,7 @@ namespace ElementAdmin.Infrastructure.Attributes
             var identity = await IdentityModelTools.GetIdentityModel(httpContext, config);
             if (!_roles.All(x => identity.Roles.Contains(x)))
             {
-                await IdentityModelTools.NoAccessAsync(httpContext);
+                IdentityModelTools.NoAccessAsync(httpContext);
             }
             await next(context);
         }
@@ -51,22 +53,27 @@ namespace ElementAdmin.Infrastructure.Attributes
             var token = httpContext.HttpContext.Request.Headers["x-token"];
             if (string.IsNullOrWhiteSpace(token))
             {
-                await NoAccessAsync(httpContext);
+                NoAccessAsync(httpContext);
             }
 
             var identity = await new RedisClient(config).StringGetAsync<IdentityModel>(UserConst.IdentityKey(token));
             if (identity == null)
             {
-                await NoAccessAsync(httpContext);
+                NoAccessAsync(httpContext);
             }
             return identity;
         }
 
-        public async static Task NoAccessAsync(IHttpContextAccessor httpContext)
+        public static void NoAccessAsync(IHttpContextAccessor httpContext)
         {
-            httpContext.HttpContext.Response.StatusCode = 403;
-            await httpContext.HttpContext.Response.WriteAsync("do not have permission");
-            httpContext.HttpContext.Abort();
+            var response = httpContext.HttpContext.Response;
+            var message = Encoding.UTF8.GetBytes("do not have permission");
+            response.OnStarting(async () =>
+            {
+                if (httpContext.HttpContext.Response.StatusCode == 403) return;
+                httpContext.HttpContext.Response.StatusCode = 403;
+                await response.Body.WriteAsync(message, 0, message.Length);
+            });
         }
     }
 
