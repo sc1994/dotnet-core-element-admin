@@ -1,6 +1,7 @@
 ﻿using System;
 using AspectCore.Configuration;
 using AspectCore.DynamicProxy.Parameters;
+using AspectCore.Extensions.AspectScope;
 using AspectCore.Extensions.DependencyInjection;
 using AspectCore.Injector;
 using ElementAdmin.Infrastructure.IoC;
@@ -70,11 +71,12 @@ namespace ElementAdmin.Application
             RegisterRepository.Register(services);
             RegisterContext.Register(services);
             RegisterOther.Register(services);
+            RegisterAspect.Register(services);
 
             var container = services.ToServiceContainer();
-            RegisterAspect.Register(container);
             container.Configuration.Interceptors.AddTyped<EnableParameterAspectInterceptor>();
-
+            container.AddAspectScope();
+            
             return container.Build();
         }
 

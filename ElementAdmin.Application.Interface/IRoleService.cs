@@ -3,6 +3,7 @@
 using System.Threading.Tasks;
 using ElementAdmin.Application.Model;
 using ElementAdmin.Application.Model.Role;
+using ElementAdmin.Infrastructure.Attributes;
 
 namespace ElementAdmin.Application.Interface
 {

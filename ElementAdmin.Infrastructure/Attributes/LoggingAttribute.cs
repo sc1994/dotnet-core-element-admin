@@ -11,22 +11,9 @@ using Serilog;
 
 namespace ElementAdmin.Infrastructure.Attributes
 {
-    public class LoggingAttribute : ScopeInterceptorAttribute
+    public class LoggerAttribute : ScopeInterceptorAttribute
     {
         public override Scope Scope { get; set; } = Scope.None;
-
-        /// <summary>
-        /// 忽略参数（如果参数中包含了自循环，或者参数体积过大）
-        /// </summary>
-        public bool IgnoreParams { get; set; } = false;
-        /// <summary>
-        /// 忽略返回数据（如果数据中包含了自循环，或者数据体积过大）
-        /// </summary>
-        public bool IgnoreReturn { get; set; } = false;
-        /// <summary>
-        /// 忽略追踪（如果遇到性能问题）
-        /// </summary>
-        public bool IgnoreTracer { get; set; } = false;
 
         public override async Task Invoke(AspectContext context, AspectDelegate next)
         {

@@ -1,26 +1,31 @@
-﻿using AspectCore.Configuration;
+﻿using System.Reflection;
+using AspectCore.Configuration;
 using System.Linq;
 using AspectCore.Extensions.AspectScope;
 using AspectCore.Injector;
 using ElementAdmin.Infrastructure.Attributes;
+using System;
+using AspectCore.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ElementAdmin.Infrastructure.IoC
 {
     public class RegisterAspect
     {
-        public static void Register(IServiceContainer service)
+        static string[] logsNameSpace = new[]
         {
-            var logsNameSpace = new[]
-            {
-                "ElementAdmin.Application.Interface",
-                "ElementAdmin.Domain.Interface",
-            };
+            "ElementAdmin.Application.Interface",
+            "ElementAdmin.Domain.Interface",
+        };
 
-            service.Configure(configure =>
+        public static void Register(IServiceCollection service)
+        {
+            service.ConfigureDynamicProxy(configure =>
             {
-                configure.Interceptors.AddTyped<LoggingAttribute>(predicates => logsNameSpace.Any(x => x.StartsWith(predicates.DeclaringType.Namespace)));
+                configure.Interceptors.AddTyped<LoggerAttribute>(
+                    predicates =>
+                       logsNameSpace.Any(x => x.StartsWith(predicates.DeclaringType.Namespace)));
             });
-            service.AddAspectScope();
         }
     }
 }

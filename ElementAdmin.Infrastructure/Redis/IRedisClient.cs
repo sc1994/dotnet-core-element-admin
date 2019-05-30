@@ -4,7 +4,7 @@ using ElementAdmin.Infrastructure.Attributes;
 
 namespace ElementAdmin.Infrastructure.Redis
 {
-    [Logging]
+    [Logger]
     public interface IRedisClient : IDisposable
     {
         /// <summary>
