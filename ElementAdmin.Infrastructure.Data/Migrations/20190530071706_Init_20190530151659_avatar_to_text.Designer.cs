@@ -3,14 +3,16 @@ using System;
 using ElementAdmin.Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ElementAdmin.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ElementAdminContext))]
-    partial class ElementAdminContextModelSnapshot : ModelSnapshot
+    [Migration("20190530071706_Init_20190530151659_avatar_to_text")]
+    partial class Init_20190530151659_avatar_to_text
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

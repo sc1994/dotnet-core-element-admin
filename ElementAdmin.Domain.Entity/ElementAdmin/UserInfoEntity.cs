@@ -16,7 +16,6 @@ namespace ElementAdmin.Domain.Entity.ElementAdmin
         public const int PasswordMinLength = 6;
         public const int PasswordMaxLength = 18;
         public const int IntroductionMaxLength = 256;
-        public const int AvatarMaxLength = 256;
 
         /// <summary>
         /// 名称
@@ -63,7 +62,6 @@ namespace ElementAdmin.Domain.Entity.ElementAdmin
         /// <summary>
         /// 头像
         /// </summary>
-        [MaxLength(AvatarMaxLength)]
         [Required, Column("UIAvatar")]
         public string Avatar { get; set; } = string.Empty;
     }

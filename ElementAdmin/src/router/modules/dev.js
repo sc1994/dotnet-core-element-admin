@@ -13,30 +13,45 @@ const devRoutes = {
     icon: "bug"
   },
   children: [{
+      path: "tools",
+      component: () => import("@/views/dev/tools/index"),
+      name: "Tools",
+      meta: {
+        title: "工具集",
+        icon: "skill"
+      },
+      children: [{
+          path: "apilog",
+          component: () => import("@/views/dev/tools/api-log"),
+          name: "ApiLog",
+          meta: {
+            title: "数据调用链"
+          }
+        },
+        {
+          path: "stresstest",
+          component: () => import("@/views/dev/tools/stress-test"),
+          name: "StressTest",
+          meta: {
+            title: "接口压测"
+          }
+        },
+        {
+          path: "other",
+          component: () => import("@/views/dev/tools/other"),
+          name: "ToolOther",
+          meta: {
+            title: "其他"
+          }
+        }
+      ]
+    }, {
       path: "documentation/index",
       component: () => import("@/views/dev/documentation/index"),
       name: "Documentation",
       meta: {
         title: "文档",
         icon: "documentation"
-      }
-    },
-    {
-      path: "apilog",
-      component: () => import("@/views/dev/api-log/index"),
-      name: "ApiLog",
-      meta: {
-        title: "接口日志",
-        icon: "education"
-      }
-    },
-    {
-      path: "tools",
-      component: () => import("@/views/dev/tools/index"),
-      name: "Tools",
-      meta: {
-        title: "工具集",
-        icon: "form"
       }
     },
     {

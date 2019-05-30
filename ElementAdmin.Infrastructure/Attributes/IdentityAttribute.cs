@@ -1,5 +1,7 @@
-﻿using System;
+﻿using System.Linq;
+using System;
 using System.Threading.Tasks;
+using AspectCore.DynamicProxy;
 using AspectCore.DynamicProxy.Parameters;
 using ElementAdmin.Infrastructure.Redis;
 using ElementAdmin.Infrastructure.Redis.RedisConst;
@@ -9,12 +11,43 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ElementAdmin.Infrastructure.Attributes
 {
-    public class IdentityAttribute : ParameterInterceptorAttribute
+    public class IdentityAttribute : AbstractInterceptorAttribute
+    {
+        private readonly string[] _roles;
+        public IdentityAttribute(params string[] roles)
+        {
+            _roles = roles;
+        }
+
+        public async override Task Invoke(AspectContext context, AspectDelegate next)
+        {
+            var httpContext = context.ServiceProvider.GetService<IHttpContextAccessor>();
+            var config = context.ServiceProvider.GetService<IConfiguration>();
+            var identity = await IdentityModelTools.GetIdentityModel(httpContext, config);
+            if (!_roles.All(x => identity.Roles.Contains(x)))
+            {
+                await IdentityModelTools.NoAccessAsync(httpContext);
+            }
+            await next(context);
+        }
+    }
+
+    public class IdentityModelAttribute : ParameterInterceptorAttribute
     {
         public override async Task Invoke(ParameterAspectContext context, ParameterAspectDelegate next)
         {
             var httpContext = context.AspectContext.ServiceProvider.GetService<IHttpContextAccessor>();
             var config = context.AspectContext.ServiceProvider.GetService<IConfiguration>();
+            var identity = await IdentityModelTools.GetIdentityModel(httpContext, config);
+            context.AspectContext.Parameters[0] = identity;
+            await next(context);
+        }
+    }
+
+    internal class IdentityModelTools
+    {
+        public async static Task<IdentityModel> GetIdentityModel(IHttpContextAccessor httpContext, IConfiguration config)
+        {
             var token = httpContext.HttpContext.Request.Headers["x-token"];
             if (string.IsNullOrWhiteSpace(token))
             {
@@ -26,15 +59,14 @@ namespace ElementAdmin.Infrastructure.Attributes
             {
                 await NoAccessAsync(httpContext);
             }
-            context.AspectContext.Parameters[0] = identity;
-            await next(context);
+            return identity;
         }
 
-        private async Task NoAccessAsync(IHttpContextAccessor http)
+        public async static Task NoAccessAsync(IHttpContextAccessor httpContext)
         {
-            http.HttpContext.Response.StatusCode = 403;
-            await http.HttpContext.Response.WriteAsync("do not have permission");
-            http.HttpContext.Abort();
+            httpContext.HttpContext.Response.StatusCode = 403;
+            await httpContext.HttpContext.Response.WriteAsync("do not have permission");
+            httpContext.HttpContext.Abort();
         }
     }
 

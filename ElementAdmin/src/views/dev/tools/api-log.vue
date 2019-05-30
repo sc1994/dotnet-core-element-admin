@@ -11,19 +11,17 @@
       <el-col :span="8">
         <el-form label-width="100px">
           <el-form-item label="时间范围：">
-            <div class="block">
-              <el-date-picker
-                v-model="timestamp"
-                type="datetimerange"
-                :picker-options="pickerOptions"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                format="yyyy-MM-dd HH:mm:ss"
-                value-format="yyyy-MM-dd HH:mm:ss"
-                align="right"
-              ></el-date-picker>
-            </div>
+            <el-date-picker
+              v-model="timestamp"
+              type="datetimerange"
+              :picker-options="pickerOptions"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              format="yyyy-MM-dd HH:mm:ss"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              align="left"
+            ></el-date-picker>
           </el-form-item>
         </el-form>
       </el-col>
@@ -34,10 +32,13 @@
           </el-form-item>
         </el-form>
       </el-col>
-      <el-col :span="4">
-        <el-button type="primary" plain @click="search(1)">搜 索</el-button>
-      </el-col>
     </el-row>
+    <el-form label-width="100px">
+      <el-form-item label="刷新：">
+        <el-checkbox v-model="autoRefresh" label="自动刷新" border></el-checkbox>
+        <el-button type="primary" plain @click="search(1)">搜 索</el-button>
+      </el-form-item>
+    </el-form>
     <el-table
       :data="tableData"
       style="font-size: 12px;width: 100%"
@@ -104,10 +105,12 @@
 <script>
 import clip from "@/utils/clipboard";
 import { search, searchChild } from "@/api/api-log";
+var timeSet;
 
 export default {
   data() {
     return {
+      autoRefresh: false,
       pickerOptions: {
         shortcuts: [
           {
@@ -153,7 +156,8 @@ export default {
       timestamp: [],
       tableData: [],
       onlyError: false,
-      loading: false
+      loading: false,
+      pageIndex: 0
     };
   },
   methods: {
@@ -161,9 +165,10 @@ export default {
       clip(text, event);
     },
     async search(index) {
+      this.pageIndex = index;
       this.loading = true;
       var response = await search({
-        size: 11,
+        size: 10,
         index: index,
         form: {
           methodName: this.methodName,
@@ -265,25 +270,44 @@ export default {
       );
     }
   },
+  watch: {
+    autoRefresh(val) {
+      if (val) {
+        timeSet = setInterval(() => {
+          if (this.timestamp && this.timestamp.length == 2) {
+            if (new Date() - new Date(this.timestamp[1]) < 10000) {
+              var options = {
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric",
+                hour12: false
+              };
+              var start = new Date();
+              start.setTime(
+                start.getTime() -
+                  (new Date(this.timestamp[1]) - new Date(this.timestamp[0]))
+              );
+              this.timestamp = [
+                new Intl.DateTimeFormat("ZH-cn", options).format(start),
+                new Intl.DateTimeFormat("ZH-cn", options).format(new Date())
+              ];
+            }
+          }
+          this.search(this.pageIndex);
+        }, 3000);
+      } else {
+        clearInterval(timeSet);
+      }
+    }
+  },
   mounted() {
-    var options = {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-      hour12: false
-    };
-
-    var start = new Date();
-    start.setTime(start.getTime() - 3600 * 500);
-
-    this.timestamp = [
-      new Intl.DateTimeFormat("ZH-cn", options).format(start),
-      new Intl.DateTimeFormat("ZH-cn", options).format(new Date())
-    ];
     this.search(1);
+  },
+  destroyed() {
+    clearInterval(timeSet);
   }
 };
 </script>
