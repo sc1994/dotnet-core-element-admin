@@ -1,5 +1,3 @@
-
-
 using System.Threading.Tasks;
 using ElementAdmin.Application.Model;
 using ElementAdmin.Application.Model.Role;
@@ -13,6 +11,7 @@ namespace ElementAdmin.Application.Interface
         /// 获取角色
         /// </summary>
         /// <returns></returns>
+        [Identity("admin")]
         Task<ApiResponse> GetRolesAsync();
 
         /// <summary>
@@ -20,6 +19,7 @@ namespace ElementAdmin.Application.Interface
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
+        [Identity("admin")]
         Task<ApiResponse> AddRoleAsync(RoleModel model);
 
         /// <summary>
@@ -27,6 +27,7 @@ namespace ElementAdmin.Application.Interface
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
+        [Identity("admin")]
         Task<ApiResponse> UpdateRoleAsync(RoleModel model);
 
         /// <summary>
@@ -34,6 +35,7 @@ namespace ElementAdmin.Application.Interface
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Identity("admin")]
         Task<ApiResponse> DeleteRoleAsync(long id);
 
         /// <summary>

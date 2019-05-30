@@ -6,6 +6,7 @@ using ElementAdmin.Application.Model;
 using ElementAdmin.Application.Model.Identity;
 using ElementAdmin.Domain.Entity.ElementAdmin;
 using ElementAdmin.Domain.Interface.ElementAdmin;
+using ElementAdmin.Infrastructure;
 using ElementAdmin.Infrastructure.Attributes;
 using ElementAdmin.Infrastructure.Redis;
 using ElementAdmin.Infrastructure.Redis.RedisConst;
@@ -53,7 +54,8 @@ namespace ElementAdmin.Domain
 
         public async Task<ApiResponse> LoginAsync(RegisterUserInfo register)
         {
-            if (register.Username == "admin") // 默认用户
+            if (register.Username == AppConst.AdminUsername
+                && register.Password == AppConst.AdminPassword) // 默认用户
             {
                 var token = Guid.NewGuid();
                 await _redis.StringSetAsync(UserConst.IdentityKey(token.ToString()), new IdentityModel
@@ -65,7 +67,7 @@ namespace ElementAdmin.Domain
                     Roles = new[] { "admin" },
                     Routes = new[] { "Permission", "RolePermission", "UserPermission" },
                     UpdateAt = DateTime.Now,
-                    Username = "admin",
+                    Username = AppConst.AdminUsername,
                     Token = token.ToString()
                 }, DateTime.Today.AddDays(7) - DateTime.Now);
                 return Ok<object>(new { token = token });
