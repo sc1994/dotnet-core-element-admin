@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using ElementAdmin.Application.Model;
 using ElementAdmin.Application.Model.Tools;
+using ElementAdmin.Infrastructure.Attributes;
 
 namespace ElementAdmin.Application.Interface
 {
@@ -10,12 +11,14 @@ namespace ElementAdmin.Application.Interface
         /// 初始化路由到数据库
         /// </summary>
         /// <returns></returns>
+        [Identity("dev")]
         Task<ApiResponse> InitRouteDataAsync(RouteModel[] routes);
 
         /// <summary>
         /// 获取数据
         /// </summary>
         /// <returns></returns>
+        [Identity("dev")]
         ApiResponse GetEntities();
 
         /// <summary>
@@ -23,6 +26,7 @@ namespace ElementAdmin.Application.Interface
         /// </summary>
         /// <param name="entities"></param>
         /// <returns></returns>
+        [Identity("dev")]
         ApiResponse InitEntities(string[] entities);
     }
 }

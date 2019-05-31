@@ -4,6 +4,7 @@ using AspectCore.DynamicProxy.Parameters;
 using AspectCore.Extensions.AspectScope;
 using AspectCore.Extensions.DependencyInjection;
 using AspectCore.Injector;
+using ElementAdmin.Application.Hubs;
 using ElementAdmin.Infrastructure.IoC;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -33,24 +34,16 @@ namespace ElementAdmin.Application
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true);
             builder.AddEnvironmentVariables();
 
-            //Log.Logger = new LoggerConfiguration()
-            //    .WriteTo
-            //    .File(new CompactJsonFormatter(),
-            //        "logs/log_.log",
-            //        rollingInterval: RollingInterval.Hour)
-            //    .CreateLogger(); todo 文件日志
-
             // es 日志
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(configuration.GetConnectionString("ElasticsearchConnection")))
                 {
                     // IndexFormat = "element-admin-index-{yyyy.MM.dd.HH}",
                     // TemplateName = "default-template",
-                    // TypeName = "default-type",
+                    // TypeName = "method-invoke",
                     // MinimumLogEventLevel = LogEventLevel.Information,
                     AutoRegisterTemplate = true
                 })
-                //.ReadFrom.Configuration(configuration)
                 .CreateLogger(); // todo es异常处理
 
             Configuration = builder.Build();
@@ -63,8 +56,9 @@ namespace ElementAdmin.Application
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "API", Version = "v1" });
-                //c.IncludeXmlComments("wwwroot/ElementAdmin.Application.Web.xml");
             });
+
+            services.AddSignalR();
 
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             RegisterDomain.Register(services);
@@ -76,7 +70,7 @@ namespace ElementAdmin.Application
             var container = services.ToServiceContainer();
             container.Configuration.Interceptors.AddTyped<EnableParameterAspectInterceptor>();
             container.AddAspectScope();
-            
+
             return container.Build();
         }
 
@@ -84,15 +78,15 @@ namespace ElementAdmin.Application
         {
             if (env.IsDevelopment())
             {
+                app.UseCors(x =>
+                    x.AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .WithOrigins("http://localhost:9527")
+                        .AllowCredentials());
                 app.UseDeveloperExceptionPage();
             }
 
-            // logger.AddSerilog();
-
             app.UsePathBase("/api");
-
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
@@ -100,13 +94,15 @@ namespace ElementAdmin.Application
                 c.SwaggerEndpoint("/api/swagger/v1/swagger.json", "API_V1");
             });
 
-            app.UseCors(x =>
-                x.AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowAnyOrigin()
-                    .AllowCredentials());
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             app.UseMvc();
+
+            app.UseSignalR(builder =>
+                {
+                    builder.MapHub<StressTestHub>("/sth");
+                });
         }
     }
 }

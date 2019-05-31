@@ -26,11 +26,14 @@ namespace ElementAdmin.Infrastructure.Attributes
             var httpContext = context.ServiceProvider.GetService<IHttpContextAccessor>();
             var config = context.ServiceProvider.GetService<IConfiguration>();
             var identity = await IdentityModelTools.GetIdentityModel(httpContext, config);
-            if (!_roles.All(x => identity.Roles.Contains(x)))
+            if (identity != null)
             {
-                IdentityModelTools.NoAccessAsync(httpContext);
+                if (!_roles.All(x => identity.Roles.Contains(x)))
+                {
+                    IdentityModelTools.NoAccessAsync(httpContext);
+                }
+                await next(context);
             }
-            await next(context);
         }
     }
 
@@ -41,8 +44,11 @@ namespace ElementAdmin.Infrastructure.Attributes
             var httpContext = context.AspectContext.ServiceProvider.GetService<IHttpContextAccessor>();
             var config = context.AspectContext.ServiceProvider.GetService<IConfiguration>();
             var identity = await IdentityModelTools.GetIdentityModel(httpContext, config);
-            context.AspectContext.Parameters[0] = identity;
-            await next(context);
+            if (identity != null)
+            {
+                context.AspectContext.Parameters[0] = identity;
+                await next(context);
+            }
         }
     }
 
