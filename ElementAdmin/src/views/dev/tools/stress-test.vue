@@ -1,21 +1,23 @@
 <template>
-  <div style="height: 90vh">
-    <split-pane split="vertical" @resize="resize" :default-percent="30">
-      <template slot="paneL">
-        <el-card class="box-card" style="min-height: 90vh;">
-          <el-button
-            style="position: absolute;right: 14px;top: 14px;"
-            type="success"
-            icon="el-icon-caret-right"
-            circle
-          ></el-button>
-          <br>
-
+  <div>
+    <el-container>
+      <el-aside width="28%" style="padding: 0px;height: 88vh;">
+        <el-card class="box-card" style="min-height: 88vh">
+          <div>
+            <el-button
+              style="position: absolute;left: 25%;top: 14px;"
+              type="success"
+              icon="el-icon-caret-right"
+              circle
+              @click="start"
+            ></el-button>
+          </div>
+          <div style="height:14px;"></div>
           <el-divider content-position="left">URL</el-divider>
           <el-input
             type="textarea"
             autosize
-            placeholder="输入url。需要动态参数，请以{#value/}占位。"
+            placeholder="输入url。需要动态参数，请以<#value/>占位。"
             v-model="form.url"
           ></el-input>
 
@@ -27,9 +29,9 @@
           </el-radio-group>
 
           <el-divider content-position="left">Headers</el-divider>
-          <div v-for="item in form.headers" :key="item.key" style="margin-top: 6px;">
+          <div v-for="item in form.headers" :key="form.headers.indexOf(item)" style="margin-top: 6px;">
             <el-input v-model="item.key" placeholder="Key" style="width:30%"></el-input>
-            <el-input v-model="item.value" placeholder="以{#value/}占位。" style="width:40%"></el-input>
+            <el-input v-model="item.value" placeholder="以<#value/>占位。" style="width:40%"></el-input>
             <el-button-group style="margin-top: -2px;margin-left: 10px;">
               <el-button
                 icon="el-icon-circle-plus-outline"
@@ -60,7 +62,7 @@
             <div v-if="form.switchBody">
               <div v-for="item in form.body" :key="item.key" style="margin-top: 6px;">
                 <el-input v-model="item.key" placeholder="Key" style="width:30%"></el-input>
-                <el-input v-model="item.value" placeholder="以{#value/}占位。" style="width:40%"></el-input>
+                <el-input v-model="item.value" placeholder="以<#value/>占位。" style="width:40%"></el-input>
                 <el-button-group style="margin-top: -2px;margin-left: 10px;">
                   <el-button
                     icon="el-icon-circle-plus-outline"
@@ -94,18 +96,9 @@
             <el-button round>导 入</el-button>
           </div>
         </el-card>
-      </template>
-      <template slot="paneR">
-        <split-pane split="horizontal">
-          <template slot="paneL">
-            <div class="top-container"/>
-          </template>
-          <template slot="paneR">
-            <div class="bottom-container"/>
-          </template>
-        </split-pane>
-      </template>
-    </split-pane>
+      </el-aside>
+      <el-container></el-container>
+    </el-container>
     <el-dialog
       v-el-drag-dialog
       :visible.sync="dialogBodyJson"
@@ -128,14 +121,13 @@
 <script>
 import { start } from "@/api/stresstest";
 import { connection } from "@/utils/websocket";
-import splitPane from "vue-splitpane";
 import JsonEditor from "@/components/JsonEditor";
 import elDragDialog from "@/directive/el-drag-dialog"; // base on element-ui
 
 export default {
   name: "stresstest",
   directives: { elDragDialog },
-  components: { splitPane, JsonEditor },
+  components: { JsonEditor },
   data() {
     return {
       dialogBodyJson: false,
@@ -144,7 +136,9 @@ export default {
         dynamicJson: [],
         bodyJson: {},
         headers: [{}],
-        body: [{}]
+        body: [{}],
+        method: "get",
+        url: ""
       },
       ws: {}
     };
@@ -154,7 +148,13 @@ export default {
       this.$refs.select.blur();
     },
     async start() {
-      await start();
+      let that = JSON.parse(JSON.stringify(this.form));
+      that.dynamicJson = JSON.stringify(this.form.dynamicJson);
+      that.bodyJson = JSON.stringify(this.form.bodyJson);
+      that.headers = this.form.headers.filter(x => x.key && x.value);
+      that.body = this.form.body.filter(x => x.key && x.value);
+      that.connectedId = this.ws.id;
+      await start(that);
     },
     resize() {
       console.log("resize");

@@ -1,8 +1,9 @@
 import request from '@/utils/request'
 
-export function start() {
+export function start(data) {
   request({
     url: "/stresstest",
-    method: "get"
+    method: "post",
+    data
   })
 }

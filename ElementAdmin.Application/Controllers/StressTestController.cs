@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.SignalR;
 using ElementAdmin.Application.Hubs;
 using System.Threading;
 using Microsoft.Extensions.Logging;
+using ElementAdmin.Application.Model.Tools;
 
 namespace ElementAdmin.Application.Controllers
 {
@@ -19,18 +20,20 @@ namespace ElementAdmin.Application.Controllers
     public class StressTestController
     {
         private readonly IHubContext<StressTestHub> _hubContext;
-        private readonly ILogger _log;
+        private readonly ILogger<StressTestController> _log;
 
 
-        public StressTestController(IHubContext<StressTestHub> hubContext, ILogger log)
+        public StressTestController(IHubContext<StressTestHub> hubContext, ILogger<StressTestController> log)
         {
             _hubContext = hubContext;
             _log = log;
         }
 
-        [HttpGet]
-        public ApiResponse StartStressTest()
+        [HttpPost]
+        public ApiResponse StartStressTest(StressTestModel model)
         {
+            model.VerifyStart();
+            return Ok(model);
             var count = 10;
             var url = "";
             var connectionId = ""; //  调用方传入
