@@ -2,7 +2,6 @@ using System.Net;
 using System;
 using System.Threading.Tasks;
 using ElementAdmin.Application.Model;
-using ElementAdmin.Application.Model.ApiLog;
 using Flurl.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Internal;

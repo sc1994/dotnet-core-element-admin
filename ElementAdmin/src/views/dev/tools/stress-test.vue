@@ -119,7 +119,7 @@
 </template>
 
 <script>
-import { start } from "@/api/stresstest";
+import { start } from "@/api/tools";
 import { connection } from "@/utils/websocket";
 import JsonEditor from "@/components/JsonEditor";
 import elDragDialog from "@/directive/el-drag-dialog"; // base on element-ui

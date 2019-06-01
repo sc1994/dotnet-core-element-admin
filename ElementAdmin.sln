@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElementAdmin.Infrastructure
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElementAdmin.Application.Interface", "ElementAdmin.Application.Interface\ElementAdmin.Application.Interface.csproj", "{5EDFE90D-EA49-40FB-AE5E-23BDE2D6A2B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElementAdmin.Infrastructure", "ElementAdmin.Infrastructure\ElementAdmin.Infrastructure.csproj", "{A0444E07-3093-4FAB-81C8-1F24E75C3345}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElementAdmin.Infrastructure", "ElementAdmin.Infrastructure\ElementAdmin.Infrastructure.csproj", "{A0444E07-3093-4FAB-81C8-1F24E75C3345}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

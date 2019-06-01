@@ -22,5 +22,11 @@ namespace ElementAdmin.Infrastructure
             var buffer = that.ToByteArray();
             return BitConverter.ToInt64(buffer, 0);
         }
+
+        public static int ToInt(this Guid that)
+        {
+            var buffer = that.ToByteArray();
+            return BitConverter.ToInt32(buffer, 0);
+        }
     }
 }

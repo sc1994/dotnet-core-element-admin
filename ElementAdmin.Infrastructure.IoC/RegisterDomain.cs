@@ -1,5 +1,6 @@
 ﻿using ElementAdmin.Application.Interface;
 using ElementAdmin.Domain;
+using ElementAdmin.Domain.Tools;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ElementAdmin.Infrastructure.IoC

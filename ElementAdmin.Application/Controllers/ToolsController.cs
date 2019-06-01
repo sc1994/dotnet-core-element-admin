@@ -34,5 +34,29 @@ namespace ElementAdmin.Application.Controllers
         {
             return _tools.InitEntities(entities);
         }
+
+        [HttpPost("search")]
+        public async Task<ApiResponse> SearchLogs(ApiPageRequest<SearchModel> model)
+        {
+            return await _tools.SearchLogsAsync(model);
+        }
+
+        [HttpGet("search/{tracerId}")]
+        public async Task<ApiResponse> SearchLogsChild(string tracerId)
+        {
+            return await _tools.SearchLogsChildAsync(tracerId);
+        }
+
+        [HttpPost("startstresstest")]
+        public async Task<ApiResponse> StartStressTest(StressTestModel model)
+        {
+            return await _tools.StartStressTestAsync(model);
+        }
+
+        [HttpGet("abortstresstest/{connectionId}")]
+        public ApiResponse AbortStressTest(string connectionId)
+        {
+            return _tools.AbortStressTest(connectionId);
+        }
     }
 }

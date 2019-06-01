@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using AspectCore.DynamicProxy;
 using ElementAdmin.Application.Model;
 using ElementAdmin.Application.Model.Identity;
 using ElementAdmin.Infrastructure.Attributes;

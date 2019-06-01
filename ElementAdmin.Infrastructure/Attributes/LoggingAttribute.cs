@@ -5,7 +5,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AspectCore.DynamicProxy;
-using Newtonsoft.Json;
 using AspectCore.Extensions.AspectScope;
 using Serilog;
 

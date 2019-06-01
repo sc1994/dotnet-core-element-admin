@@ -8,17 +8,27 @@ using ElementAdmin.Application.Model;
 using ElementAdmin.Application.Model.Tools;
 using ElementAdmin.Domain.Entity.ElementAdmin;
 using ElementAdmin.Domain.Interface.ElementAdmin;
+using ElementAdmin.Infrastructure.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using static ElementAdmin.Application.Model.ApiResponse;
 
-namespace ElementAdmin.Domain
+namespace ElementAdmin.Domain.Tools
 {
-    public class ToolService : IToolService
+    public partial class ToolService : IToolService
     {
         private readonly IRouteRepository _route;
+        private readonly IHubContext<StressTestHub> _hubContext;
+        private readonly IConfiguration _config;
 
-        public ToolService(IRouteRepository route)
+        public ToolService(
+            IRouteRepository route,
+            IHubContext<StressTestHub> hubContext,
+            IConfiguration config)
         {
             _route = route;
+            _hubContext = hubContext;
+            _config = config;
         }
 
         public async Task<ApiResponse> InitRouteDataAsync(RouteModel[] routes)

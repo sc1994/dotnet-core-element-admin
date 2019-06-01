@@ -22,3 +22,27 @@ export function getEntities() {
     method: "get"
   })
 }
+
+
+export function search(data) {
+  return request({
+    method: "post",
+    url: "/tools/search",
+    data
+  });
+}
+
+export function searchChild(data) {
+  return request({
+    method: "get",
+    url: `/tools/search/${data}`
+  });
+}
+
+export function start(data) {
+  request({
+    url: "/tools/startstresstest",
+    method: "post",
+    data
+  })
+}

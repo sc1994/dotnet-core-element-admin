@@ -104,7 +104,7 @@
 
 <script>
 import clip from "@/utils/clipboard";
-import { search, searchChild } from "@/api/api-log";
+import { search, searchChild } from "@/api/tools";
 var timeSet;
 
 export default {

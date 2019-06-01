@@ -1,10 +1,12 @@
 ﻿using System.Threading.Tasks;
+using AspectCore.DynamicProxy;
 using ElementAdmin.Application.Model;
 using ElementAdmin.Application.Model.Tools;
 using ElementAdmin.Infrastructure.Attributes;
 
 namespace ElementAdmin.Application.Interface
 {
+    [NonAspect]
     public interface IToolService
     {
         /// <summary>
@@ -28,5 +30,37 @@ namespace ElementAdmin.Application.Interface
         /// <returns></returns>
         [Identity("dev")]
         ApiResponse InitEntities(string[] entities);
+
+        /// <summary>
+        /// 搜索日志数据
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [Identity("dev")]
+        Task<ApiResponse> SearchLogsAsync(ApiPageRequest<SearchModel> model);
+
+        /// <summary>
+        /// 搜索日志子项数据
+        /// </summary>
+        /// <param name="tracerId"></param>
+        /// <returns></returns>
+        [Identity("dev")]
+        Task<ApiResponse> SearchLogsChildAsync(string tracerId);
+
+        /// <summary>
+        /// 开始压测
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [Identity("dev")]
+        Task<ApiResponse> StartStressTestAsync(StressTestModel model);
+
+        /// <summary>
+        /// 停止压测
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <returns></returns>
+        [Identity("dev")]
+        ApiResponse AbortStressTest(string connectionId);
     }
 }

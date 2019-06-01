@@ -4,7 +4,7 @@ using AspectCore.DynamicProxy.Parameters;
 using AspectCore.Extensions.AspectScope;
 using AspectCore.Extensions.DependencyInjection;
 using AspectCore.Injector;
-using ElementAdmin.Application.Hubs;
+using ElementAdmin.Infrastructure.Hubs;
 using ElementAdmin.Infrastructure.IoC;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -14,7 +14,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
 using Swashbuckle.AspNetCore.Swagger;
 

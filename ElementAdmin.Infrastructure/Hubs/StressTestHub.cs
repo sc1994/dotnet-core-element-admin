@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 
-namespace ElementAdmin.Application.Hubs
+namespace ElementAdmin.Infrastructure.Hubs
 {
     public interface IStressTestHub
     {

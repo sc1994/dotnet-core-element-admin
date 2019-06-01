@@ -1,4 +1,5 @@
 using System;
+
 namespace ElementAdmin.Application.Model.Identity
 {
     /// <summary>

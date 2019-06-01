@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ElementAdmin.Application.Model.ApiLog
+namespace ElementAdmin.Application.Model.Tools
 {
     /// <summary>
     /// 日志搜索

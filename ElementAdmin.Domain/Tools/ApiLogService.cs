@@ -1,33 +1,17 @@
-using System.Threading;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using ElementAdmin.Application.Model;
-using ElementAdmin.Application.Model.ApiLog;
+using ElementAdmin.Application.Model.Tools;
 using Flurl.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using static ElementAdmin.Application.Model.ApiResponse;
 
-namespace ElementAdmin.Application.Controllers
+namespace ElementAdmin.Domain.Tools
 {
-    [Route("[controller]")]
-    [ApiController]
-    public class ApiLogController
+    public partial class ToolService
     {
-        private readonly IConfiguration _config;
-
-        public ApiLogController(IConfiguration config)
-        {
-            _config = config;
-        }
-
-        /// <summary>
-        /// 接口日志搜索
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("search")]
-        public async Task<ApiResponse> SearchApiLog(ApiPageRequest<SearchModel> model)
+        public async Task<ApiResponse> SearchLogsAsync(ApiPageRequest<SearchModel> model)
         {
             var from = (model.Index - 1) * model.Size;
             var data = "{\"from\":" + from + ",\"size\":" + model.Size + ",\"query\":{\"bool\":{\"filter\":[{\"bool\":{\"filter\":{\"term\":{\"messageTemplate.keyword\":\"Invoke({start_timestamp},{tracer_id},{full_method},{method},{parameters},{return_value},{performance},{error})\"}}}}{#MethodName}]}},\"sort\":[{\"fields.start_timestamp\":{\"order\":\"DESC\"}}]}";
@@ -56,18 +40,13 @@ namespace ElementAdmin.Application.Controllers
             return Ok(@string);
         }
 
-        /// <summary>
-        /// 子项搜索
-        /// </summary>
-        /// <param name="tracerId"></param>
-        /// <returns></returns>
-        [HttpGet("{tracerId}")]
-        public async Task<ApiResponse> SearchChildApiLog(string tracerId)
+        public async Task<ApiResponse> SearchLogsChildAsync(string tracerId)
         {
             var data = "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"messageTemplate.keyword\":\"InvokeChild({start_timestamp},{tracer_id},{full_method},{method},{parameters},{return_value},{performance},{error})\"}},{\"term\":{\"fields.tracer_id.keyword\":\"" + tracerId + "\"}}],\"must_not\":[],\"should\":[]}},\"from\":0,\"size\":10,\"sort\":[{\"fields.start_timestamp\":{\"order\":\"ASC\"}}]}";
             var @string = await SendDataToEs(data);
             return Ok(@string);
         }
+
 
         /// <summary>
         /// 发送数据到es
