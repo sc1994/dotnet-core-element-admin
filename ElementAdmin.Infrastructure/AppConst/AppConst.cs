@@ -9,7 +9,7 @@ namespace ElementAdmin.Infrastructure
         /// <summary>
         /// 管理员密码
         /// </summary>
-        public const string AdminPassword = "123456";
+        public const string AdminPassword = "123123";
     }
 
 }

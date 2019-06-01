@@ -6,8 +6,6 @@ namespace ElementAdmin.Application.Model.Tools
 {
     public class RouteModel
     {
-        public RouteModel() { }
-        
         public string Name { get; set; }
         public RouteMetaModel Meta { get; set; }
         public string Path { get; set; }
