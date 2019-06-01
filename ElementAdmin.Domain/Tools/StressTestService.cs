@@ -11,6 +11,7 @@ using static ElementAdmin.Application.Model.ApiResponse;
 using Flurl.Http;
 using System;
 using System.Net.Http;
+using ElementAdmin.Infrastructure;
 
 namespace ElementAdmin.Domain.Tools
 {
@@ -34,6 +35,8 @@ namespace ElementAdmin.Domain.Tools
                     Url = model.GetUrl(),
                     Method = model.Method,
                     Headers = model.GetHeaders(),
+                    Body = model.GetBody().ToJson(),
+                    BodyJson = model.GetBodyJson(),
                 });
             }
 
@@ -50,7 +53,7 @@ namespace ElementAdmin.Domain.Tools
             first.Sending();
             await first.SendedAsync();
             var firstResult = await first.ResultAsync();
-            await client.SendAsync("preheat", "预热完毕", firstResult);
+            await client.SendAsync("next", "预热完毕", firstResult);
 
             var parallel = Parallel.ForEach(
                        threads,

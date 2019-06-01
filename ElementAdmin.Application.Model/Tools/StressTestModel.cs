@@ -222,10 +222,9 @@ namespace ElementAdmin.Application.Model.Tools
             }
             return true;
         }
-
         private Dictionary<string, object> GetKeyValue(StressTestKeyValue[] keyValue)
         {
-            if (keyValue == null) return null;
+            if (keyValue == null || !keyValue.Any()) return null;
             var result = new Dictionary<string, object>();
             foreach (var item in keyValue)
             {
@@ -247,7 +246,6 @@ namespace ElementAdmin.Application.Model.Tools
             }
             return result;
         }
-
         private string GetString(string @sting)
         {
             var regex = Regex.Match(@sting, _regex);
@@ -276,7 +274,6 @@ namespace ElementAdmin.Application.Model.Tools
     public class StressTestKeyValue
     {
         public string Key { get; set; }
-
         public string Value { get; set; }
     }
 }
