@@ -65,7 +65,7 @@ namespace ElementAdmin.Domain
                     Introduction = "我是默认管理员",
                     Name = "管理员",
                     Roles = new[] { "admin" },
-                    Routes = new[] { "Permission", "RolePermission", "UserPermission" },
+                    Routes = new[] { "Permission", "RolePermission", "UserPermission", "Developer", "Tools", "ToolOther" },
                     UpdateAt = DateTime.Now,
                     Username = AppConst.AdminUsername,
                     Token = token.ToString()

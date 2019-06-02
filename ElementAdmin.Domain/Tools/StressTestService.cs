@@ -19,12 +19,14 @@ namespace ElementAdmin.Domain.Tools
     {
         public async Task<ApiResponse> StartStressTestAsync(StressTestModel model)
         {
+            var client = _hubContext.Clients.Client(model.ConnectedId);
             if (!model.VerifyStart())
             {
+                await client.SendAsync("next", "参数验证失败", "error");
                 return Bad(model.VerifyMessage);
             }
-            var client = _hubContext.Clients.Client(model.ConnectedId);
-            await client.SendAsync("next", "参数验证完毕，建立链接");
+            
+            await client.SendAsync("next", "参数验证完毕");
 
             // 创建线程
             var threads = new List<StressTestItem>();
@@ -43,17 +45,36 @@ namespace ElementAdmin.Domain.Tools
             var cts = new CancellationTokenSource();
             if (!StressTestStore.Content.TryAdd(model.ConnectedId, cts))
             {
-                return Bad("创建线程失败");
+                await client.SendAsync("next", "初始化线程失败", "error");
+                return Bad("初始化线程失败");
             }
 
             var count = new ConcurrentBag<int>();
             await client.SendAsync("next", "初始化线程完毕");
 
-            var first = threads.First();
-            first.Sending();
-            await first.SendedAsync();
-            var firstResult = await first.ResultAsync();
-            await client.SendAsync("next", "预热完毕", firstResult);
+            try
+            {
+                var first = threads.First();    
+                first.Sending();
+                var firstResult = await first.ResultAsync();
+                if(model.AssertResponse(firstResult))
+                {
+                    await client.SendAsync("next", "预热完毕");
+                }
+                else
+                {
+                    StressTestStore.Content.TryRemove(model.ConnectedId, out _);
+                    await client.SendAsync("next", "预热成功，但是断言失败", "error");
+                    return Bad("预热成功，但断言失败");
+                }
+            }
+            catch(Exception ex)
+            {
+                // todo 更多信息
+                StressTestStore.Content.TryRemove(model.ConnectedId, out _);
+                await client.SendAsync("next", "预热失败", "error");
+                return Bad("预热失败");
+            }
 
             var parallel = Parallel.ForEach(
                        threads,
@@ -67,12 +88,17 @@ namespace ElementAdmin.Domain.Tools
                            {
                                try
                                {
-                                   item.Sending();
-                                   await client.SendAsync("sending", i, item.Key, item);
-                                   await item.SendedAsync();
-                                   await client.SendAsync("sended", i, item.Key);
-                                   var result = await item.ResultAsync();
-                                   await client.SendAsync("result", i, item.Key, result);
+                                    item.Sending();
+                                    await client.SendAsync("sending", i, item.Key, item);
+                                    var result = await item.ResultAsync();
+                                    if(model.AssertResponse(result))
+                                    {
+                                        await client.SendAsync("result",  i, item.Key, result);
+                                    }
+                                    else
+                                    {
+                                        await client.SendAsync("assertError", i, item.Key, result);
+                                    }
                                }
                                catch (Exception ex)
                                {
@@ -125,42 +151,28 @@ namespace ElementAdmin.Domain.Tools
             IFlurlRequest headers = null;
             if (Headers?.Any() ?? false)
             {
-                foreach (var item in Headers)
-                {
-                    if (headers == null)
-                    {
-                        headers = Url.WithHeader(item.Key, item.Value);
-                    }
-                    else
-                    {
-                        headers = headers.WithHeader(item.Key, item.Value);
-                    }
-                }
+                headers = Url.WithHeaders(Headers.ToDictionary(x => x.Key, x => x.Value));
+                headers = Url.WithTimeout(DateTime.Now.AddSeconds(30) - DateTime.Now);
+            }
+            else
+            {
+                headers = Url.WithTimeout(DateTime.Now.AddSeconds(30) - DateTime.Now);
             }
             if (Method == "post")
             {
-                _sending = Url
+                _sending = headers
                 .PostStringAsync(@string);
             }
             else if (Method == "put")
             {
-                _sending = Url
+                _sending = headers
                 .PutStringAsync(@string);
             }
             else
             {
-                _sending = Url
+                _sending = headers
                 .GetAsync();
             }
-        }
-
-        private HttpResponseMessage _sended;
-        /// <summary>
-        /// 发送结束
-        /// </summary>
-        public async Task SendedAsync()
-        {
-            _sended = await _sending;
         }
 
         /// <summary>
@@ -169,7 +181,8 @@ namespace ElementAdmin.Domain.Tools
         /// <returns></returns>
         public async Task<string> ResultAsync()
         {
-            return await _sended.Content.ReadAsStringAsync();
+            var sended = await _sending;
+            return await sended.Content.ReadAsStringAsync();
         }
     }
 

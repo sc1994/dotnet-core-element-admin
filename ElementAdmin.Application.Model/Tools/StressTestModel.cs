@@ -107,28 +107,50 @@ namespace ElementAdmin.Application.Model.Tools
         public Dictionary<string, object>[] DynamicObject { get; private set; }
 
         /// <summary>
+        /// 断言方式
+        /// </summary>
+        public int Assert {get;set;}
+
+        /// <summary>
+        /// 断言内容
+        /// </summary>
+        public string AssertValue{get;set;}
+
+        /// <summary>
         /// 线程数
         /// </summary>
         /// <value></value>
-        public int Thread { get; set; } = 10;
+        public int Thread { get; set; }
 
         /// <summary>
         /// 间隔时间
         /// </summary>
         /// <value></value>
-        public int Delay { get; set; } = 1000;
+        public int Delay { get; set; } 
 
         /// <summary>
         /// 循环数
         /// </summary>
         /// <value></value>
-        public int Cycle { get; set; } = 10;
+        public int Cycle { get; set; } 
 
         /// <summary>
         /// 验证消息
         /// </summary>
         /// <value></value>
         public string VerifyMessage { get; set; }
+
+        public bool AssertResponse(string response)
+        {
+            if(Assert == 0)   
+            {
+                return response.Contains(AssertValue);
+            }
+            else 
+            {
+                return response.ToLower() == response.ToLower();
+            }
+        }
 
         /// <summary>
         /// 验证开始压测参数
@@ -163,6 +185,11 @@ namespace ElementAdmin.Application.Model.Tools
                     VerifyMessage = "post/put必须填充body";
                     return false;
                 }
+            }
+            if(string.IsNullOrWhiteSpace(AssertValue))
+            {
+                VerifyMessage = "Assert值不能为空";
+                    return false;
             }
             DynamicJson = DynamicJson.Replace("\\n", "").Replace("\\", "").Trim('\"');
             DynamicObject = DynamicJson.ToObjectByJson<Dictionary<string, object>[]>();
