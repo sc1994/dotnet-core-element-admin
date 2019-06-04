@@ -25,7 +25,7 @@ namespace ElementAdmin.Domain.Tools
                 await client.SendAsync("next", "参数验证失败", "error");
                 return Bad(model.VerifyMessage);
             }
-            
+
             await client.SendAsync("next", "参数验证完毕");
 
             // 创建线程
@@ -54,10 +54,10 @@ namespace ElementAdmin.Domain.Tools
 
             try
             {
-                var first = threads.First();    
+                var first = threads.First();
                 first.Sending();
                 var firstResult = await first.ResultAsync();
-                if(model.AssertResponse(firstResult))
+                if (model.AssertResponse(firstResult))
                 {
                     await client.SendAsync("next", "预热完毕");
                 }
@@ -68,15 +68,15 @@ namespace ElementAdmin.Domain.Tools
                     return Bad("预热成功，但断言失败");
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // todo 更多信息
                 StressTestStore.Content.TryRemove(model.ConnectedId, out _);
-                await client.SendAsync("next", "预热失败", "error");
+                await client.SendAsync("next", "预热失败", "error", ex);
                 return Bad("预热失败");
             }
 
-            var parallel = Parallel.ForEach(
+            Parallel.ForEach(
                        threads,
                        new ParallelOptions
                        {
@@ -86,23 +86,24 @@ namespace ElementAdmin.Domain.Tools
                        {
                            for (var i = 0; i < model.Cycle; i++)
                            {
+                               var time = DateTime.Now;
                                try
                                {
-                                    item.Sending();
-                                    await client.SendAsync("sending", i, item.Key, item);
-                                    var result = await item.ResultAsync();
-                                    if(model.AssertResponse(result))
-                                    {
-                                        await client.SendAsync("result",  i, item.Key, result);
-                                    }
-                                    else
-                                    {
-                                        await client.SendAsync("assertError", i, item.Key, result);
-                                    }
+                                   item.Sending();
+                                   await client.SendAsync("sending", i, item.Key); // todo 内容
+                                   var result = await item.ResultAsync();
+                                   if (model.AssertResponse(result))
+                                   {
+                                       await client.SendAsync("result", i, item.Key, (DateTime.Now - time).TotalMilliseconds); // todo 内容
+                                   }
+                                   else
+                                   {
+                                       await client.SendAsync("assertError", i, item.Key, (DateTime.Now - time).TotalMilliseconds); // todo 内容
+                                   }
                                }
-                               catch (Exception ex)
+                               catch
                                {
-                                   await client.SendAsync("error", i, item.Key, ex);
+                                   await client.SendAsync("error", i, item.Key, (DateTime.Now - time).TotalMilliseconds); // todo 内容
                                }
                                count.Add(1);
                                if (count.Count >= model.Cycle * model.Thread)
@@ -152,7 +153,7 @@ namespace ElementAdmin.Domain.Tools
             if (Headers?.Any() ?? false)
             {
                 headers = Url.WithHeaders(Headers.ToDictionary(x => x.Key, x => x.Value));
-                headers = Url.WithTimeout(DateTime.Now.AddSeconds(30) - DateTime.Now);
+                headers = headers.WithTimeout(DateTime.Now.AddSeconds(30) - DateTime.Now);
             }
             else
             {
