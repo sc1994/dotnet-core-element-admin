@@ -46,3 +46,10 @@ export function start(data) {
     data
   })
 }
+
+export function abort(id) {
+  request({
+    url: `/tools/abortstresstest/${id}`,
+    method: "get"
+  })
+}

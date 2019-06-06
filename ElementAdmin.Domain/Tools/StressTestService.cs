@@ -22,11 +22,11 @@ namespace ElementAdmin.Domain.Tools
             var client = _hubContext.Clients.Client(model.ConnectedId);
             if (!model.VerifyStart())
             {
-                await client.SendAsync("next", "参数验证失败", "error");
+                await client.SendAsync("next", 0, "error");
                 return Bad(model.VerifyMessage);
             }
 
-            await client.SendAsync("next", "参数验证完毕");
+            await client.SendAsync("next", 0);
 
             // 创建线程
             var threads = new List<StressTestItem>();
@@ -42,15 +42,14 @@ namespace ElementAdmin.Domain.Tools
                 });
             }
 
-            var cts = new CancellationTokenSource();
-            if (!StressTestStore.Content.TryAdd(model.ConnectedId, cts))
+            if (!StressTestStore.Content.TryAdd(model.ConnectedId, 1))
             {
-                await client.SendAsync("next", "初始化线程失败", "error");
+                await client.SendAsync("next", 1, "error");
                 return Bad("初始化线程失败");
             }
 
             var count = new ConcurrentBag<int>();
-            await client.SendAsync("next", "初始化线程完毕");
+            await client.SendAsync("next", 1);
 
             try
             {
@@ -59,12 +58,12 @@ namespace ElementAdmin.Domain.Tools
                 var firstResult = await first.ResultAsync();
                 if (model.AssertResponse(firstResult))
                 {
-                    await client.SendAsync("next", "预热完毕");
+                    await client.SendAsync("next", 2);
                 }
                 else
                 {
                     StressTestStore.Content.TryRemove(model.ConnectedId, out _);
-                    await client.SendAsync("next", "预热成功，但是断言失败", "error");
+                    await client.SendAsync("next", 2, "error");
                     return Bad("预热成功，但断言失败");
                 }
             }
@@ -72,20 +71,21 @@ namespace ElementAdmin.Domain.Tools
             {
                 // todo 更多信息
                 StressTestStore.Content.TryRemove(model.ConnectedId, out _);
-                await client.SendAsync("next", "预热失败", "error", ex);
-                return Bad("预热失败");
+                await client.SendAsync("next", 2, "error");
+                return Bad(ex.Message);
             }
 
+            await client.SendAsync("next", 3);
             Parallel.ForEach(
                        threads,
-                       new ParallelOptions
-                       {
-                           CancellationToken = cts.Token
-                       },
                        async item =>
                        {
                            for (var i = 0; i < model.Cycle; i++)
                            {
+                               if (!StressTestStore.Content.TryGetValue(model.ConnectedId, out var _)) // 已取消
+                               {
+                                   return;
+                               }
                                var time = DateTime.Now;
                                try
                                {
@@ -120,16 +120,17 @@ namespace ElementAdmin.Domain.Tools
 
         public ApiResponse AbortStressTest(string connectionId)
         {
-            // if (StressTestStore.Content.TryGetValue(connectionId, out var cts))
-            // {
-            //     if (cts != null)
-            //     {
-            //         cts.Cancel();
-            //         return Ok();
-            //     }
-            // }
-            // return Bad("取消失败");
-            throw new System.NotImplementedException();
+            if (StressTestStore.Content.TryRemove(connectionId, out var cts))
+            {
+                // if (cts != null)
+                // {
+                //     cts.Cancel(true);
+                //     cts.Dispose();
+                //     cts = null;
+                return Ok();
+                // }
+            }
+            return Bad("取消失败");
         }
     }
 
@@ -189,6 +190,6 @@ namespace ElementAdmin.Domain.Tools
 
     static class StressTestStore
     {
-        public static ConcurrentDictionary<string, CancellationTokenSource> Content { get; } = new ConcurrentDictionary<string, CancellationTokenSource>();
+        public static ConcurrentDictionary<string, int> Content { get; } = new ConcurrentDictionary<string, int>();
     }
 }

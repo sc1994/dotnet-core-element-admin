@@ -138,9 +138,13 @@
           <div>
             <el-button type="primary" round>保 存</el-button>
             <el-button round>导 入</el-button>
-            <el-button type="success" round @click="start" style="float: right">
+            <el-button type="success" round @click="start" style="float: right" v-if="!running">
               开始
-              <i class="el-icon-caret-right"></i>
+              <i class="el-icon-video-play"></i>
+            </el-button>
+            <el-button type="danger" round @click="abort" style="float: right" v-else>
+              取消
+              <i class="el-icon-video-pause"></i>
             </el-button>
           </div>
         </el-card>
@@ -148,25 +152,31 @@
       <el-container style="width:100%">
         <el-header style="height: 11vh;">
           <el-steps
-            style="margin-left: 10%;margin-top: 18px;"
+            style="margin-left: 8%;margin-top: 18px;"
             align-center
             :space="200"
-            :active="nexts.length"
+            :active="nexts.index"
+            :finish-status="nexts.status"
           >
-            <el-step v-for="item in nexts" :key="item.msg" :title="item.msg" :status="item.status"></el-step>
+            <el-step title="参数验证"></el-step>
+            <el-step title="初始化线程"></el-step>
+            <el-step title="预热"></el-step>
+            <el-step title="压测"></el-step>
+            <el-step :title="stoped ? '已取消' : '全部完成'"></el-step>
           </el-steps>
           <el-progress
             :percentage="percentage"
-            v-if="percentage > 0"
+            v-if="percentage > 0 && percentage < 100"
             :text-inside="true"
             :stroke-width="17"
+            :status="stoped ? 'exception' : 'success'"
           ></el-progress>
         </el-header>
         <el-main style="padding: 0px;">
-          <el-container style="height: 76vh;padding:0px 20px;">
+          <el-container style="height: 76vh;padding:0px 20px;padding-right: 0px;">
             <el-aside
               id="div_response"
-              width="300px"
+              width="260px"
               style="padding:0px 10px;margin-bottom: 0px;background-color: #fff;"
             >
               <el-collapse style="border: 0px;" :value="responses.map(x=>x.index)">
@@ -177,8 +187,13 @@
                   style="padding-bottom: 10px;"
                 >
                   <template slot="title">
-                    <i class="el-icon-loading" v-if="!response.isDone"></i>
-                    <i class="el-icon-check" style="color:#67C23A;" v-else></i>
+                    <i
+                      class="el-icon-error"
+                      v-if="stoped && response.contents.filter(x=> x.type == 'success').length != form.cycle"
+                      style="color:#ff4949;"
+                    ></i>
+                    <i class="el-icon-loading" v-else-if="!response.isDone"></i>
+                    <i class="el-icon-check" v-else style="color:#67C23A;"></i>
                     &nbsp;&nbsp;
                     轮次：{{response.index + 1}}
                   </template>
@@ -187,11 +202,30 @@
                     :key="content.id"
                     :type="content.type"
                     style="margin-top:5px;margin-left:5px;"
-                  >{{content.des}}</el-tag>
+                  >{{stoped && content.des == '请求中...' ? '已取消' : content.des}}</el-tag>
                 </el-collapse-item>
               </el-collapse>
             </el-aside>
-            <el-main>Main</el-main>
+            <el-main>
+              <el-table
+                v-if="tableData.length>0"
+                :data="tableData"
+                border
+                :summary-method="getAverage"
+                show-summary
+                style="width: 100%; margin-top: 0px"
+              >
+                <el-table-column prop="index" sortable label="轮次" width="90"></el-table-column>
+                <el-table-column prop="count" label="已完成"></el-table-column>
+                <el-table-column prop="average" sortable label="均值" width="110"></el-table-column>
+                <el-table-column prop="fifty" sortable label="50线"></el-table-column>
+                <el-table-column prop="ninetyFive" sortable label="95线"></el-table-column>
+                <el-table-column prop="ninetyNine" sortable label="99线"></el-table-column>
+                <el-table-column prop="min" sortable label="Min"></el-table-column>
+                <el-table-column prop="max" sortable label="Max"></el-table-column>
+                <el-table-column prop="error" label="Error"></el-table-column>
+              </el-table>
+            </el-main>
           </el-container>
         </el-main>
       </el-container>
@@ -216,11 +250,13 @@
 </template>
 
 <script>
-import { start } from "@/api/tools";
+import { start, abort } from "@/api/tools";
 import { connection } from "@/utils/websocket";
 import JsonEditor from "@/components/JsonEditor";
 import elDragDialog from "@/directive/el-drag-dialog"; // base on element-ui
 var tempResponses, timeSet;
+const average = (arr, selector) => sum(arr, selector) / arr.length;
+const sum = (arr, selector) => arr.map(selector).reduce((p, c) => p + c, 0);
 
 export default {
   name: "stresstest",
@@ -238,24 +274,32 @@ export default {
         cookics: [{}],
         body: [{}],
         method: "get",
-        url: "http://10.101.72.6:9222/",
+        url: "https://www.google.com/",
         assert: "0",
         assertValue: "name",
         thread: 10,
-        cycle: 30,
+        cycle: 10,
         delay: 100
       },
       ws: {},
       percentage: 0,
       activeNames: [1],
       responses: [],
-      resultCount: 0
+      resultCount: 0,
+      tableData: [],
+      running: false,
+      stoped: false
     };
   },
   methods: {
     handleDrag() {},
     async start() {
-      this.nexts = [];
+      this.running = true;
+      this.stoped = false;
+      this.nexts = {
+        index: -1,
+        status: ""
+      };
       tempResponses = [];
       this.percentage = 0;
       this.resultCount = 0;
@@ -274,27 +318,45 @@ export default {
         );
         let div = document.getElementById("div_response");
         div.scrollTop = div.scrollHeight;
+        this.tableData = this.responses.map(x => {
+          return {
+            index: x.index,
+            count: x.contents.filter(f => f.des != "请求中...").length,
+            average: average(x.contents.filter(f => f.des != "请求中..."), s =>
+              Number.parseFloat(s.des)
+            ).toFixed(3),
+            // average
+            // fifty
+            // ninetyFive
+            // ninetyNine
+            min: Math.min(
+              ...x.contents
+                .filter(f => f.des != "请求中...")
+                .map(x => Number.parseFloat(x.des))
+            ).toFixed(3),
+            max: Math.max(
+              ...x.contents
+                .filter(f => f.des != "请求中...")
+                .map(x => Number.parseFloat(x.des))
+            ).toFixed(3)
+            // error
+          };
+        });
       }, 300);
     },
+    async abort() {
+      await abort(this.ws.id);
+      this.running = false;
+      this.stoped = true;
+      this.nexts.index = 4;
+      this.nexts.status = "error";
+      let div = document.getElementById("div_response");
+      div.scrollTop = div.scrollHeight;
+      clearInterval(timeSet);
+    },
     onNext() {
-      this.ws.connection.on("next", (msg, status) => {
-        if (status != "error") {
-          this.nexts.push({
-            msg,
-            status: "success"
-          });
-        } else {
-          this.nexts.push({
-            msg,
-            status: "error"
-          });
-        }
-        if (msg == "预热完毕") {
-          this.nexts.push({
-            msg: "开始压测",
-            status: "process "
-          });
-        }
+      this.ws.connection.on("next", (index, status) => {
+        this.nexts.index = index;
       });
     },
     onSending() {
@@ -349,11 +411,7 @@ export default {
     },
     onOver() {
       this.ws.connection.on("over", _ => {
-        var first = this.nexts.find(x => x.msg == "开始压测");
-        if (first) {
-          first.msg = "压测完毕";
-          first.status = "success";
-        }
+        this.nexts.index++;
         setTimeout(_ => {
           this.percentage = 100;
           this.responses = JSON.parse(JSON.stringify(tempResponses));
@@ -361,7 +419,34 @@ export default {
           div.scrollTop = div.scrollHeight;
           clearInterval(timeSet);
         }, 300);
+        this.running = false;
+        this.nexts.index++;
+        this.nexts.status = "success";
       });
+    },
+    getAverage(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = "总均值";
+          return;
+        }
+        if (index === 1) {
+          sums[index] = "-";
+          return;
+        }
+        const values = data
+          .map(x => Number(x[column.property]))
+          .filter(x => !isNaN(x) && x != Infinity && x != -Infinity);
+        if (values.length > 0) {
+          sums[index] = average(values, x => x).toFixed(3);
+        } else {
+          sums[index] = "-";
+        }
+      });
+
+      return sums;
     }
   },
   async mounted() {
@@ -374,3 +459,4 @@ export default {
   }
 };
 </script>
+
