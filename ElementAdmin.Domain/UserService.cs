@@ -79,6 +79,10 @@ namespace ElementAdmin.Domain
             if (user == null) return Bad("用户名或者密码错误");
             if (user.IsDelete) return Bad("此账号已被删除");
 
+            // 删除上次的登录token
+            await _redis.KeyDelete(UserConst.IdentityKey(user.Token.ToString()));
+
+            // 产生新的token
             user.Token = Guid.NewGuid();
             user.UpdateAt = DateTime.Now;
             var laterUser = await _user.UpdateAsync(user);

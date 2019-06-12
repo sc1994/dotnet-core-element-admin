@@ -65,7 +65,7 @@
       <el-table-column label="入参" prop="params" width="450">
         <template slot-scope="props">
           <el-popover placement="top" effect="light" trigger="click">
-            <pre v-html="props.row.paramsHtml"></pre>
+            <div v-html="props.row.paramsHtml" style="max-width: 800px"></div>
             <el-button
               slot="reference"
               type="text"
@@ -78,7 +78,7 @@
       <el-table-column label="返回值/异常堆栈" prop="returnValue">
         <template slot-scope="props">
           <el-popover placement="top" effect="light" trigger="click">
-            <pre v-html="props.row.returnValueHtml"></pre>
+            <div v-html="props.row.returnValueHtml" style="max-width: 800px"></div>
             <el-button
               slot="reference"
               type="text"
@@ -172,7 +172,8 @@ export default {
         index: index,
         form: {
           methodName: this.methodName,
-          timestamp: this.timestamp
+          timestamp: this.timestamp,
+          onlyError: this.onlyError
         }
       });
       this.tableData = [];

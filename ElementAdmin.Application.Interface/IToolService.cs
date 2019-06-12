@@ -4,9 +4,9 @@ using ElementAdmin.Application.Model;
 using ElementAdmin.Application.Model.Tools;
 using ElementAdmin.Infrastructure.Attributes;
 
+
 namespace ElementAdmin.Application.Interface
 {
-    [NonAspect]
     public interface IToolService
     {
         /// <summary>
@@ -37,6 +37,7 @@ namespace ElementAdmin.Application.Interface
         /// <param name="model"></param>
         /// <returns></returns>
         [Identity("dev")]
+        [NonAspect]
         Task<ApiResponse> SearchLogsAsync(ApiPageRequest<SearchModel> model);
 
         /// <summary>
@@ -45,6 +46,7 @@ namespace ElementAdmin.Application.Interface
         /// <param name="tracerId"></param>
         /// <returns></returns>
         [Identity("dev")]
+        [NonAspect]
         Task<ApiResponse> SearchLogsChildAsync(string tracerId);
 
         /// <summary>

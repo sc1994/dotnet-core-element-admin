@@ -15,5 +15,10 @@ namespace ElementAdmin.Application.Model.Tools
         /// 时间戳
         /// </summary>
         public DateTime[] Timestamp { get; set; }
+        /// <summary>
+        /// 只看异常
+        /// </summary>
+        /// <value></value>
+        public bool OnlyError { get; set; }
     }
 }

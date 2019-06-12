@@ -14,8 +14,17 @@ namespace ElementAdmin.Domain.Tools
         public async Task<ApiResponse> SearchLogsAsync(ApiPageRequest<SearchModel> model)
         {
             var from = (model.Index - 1) * model.Size;
-            var data = "{\"from\":" + from + ",\"size\":" + model.Size + ",\"query\":{\"bool\":{\"filter\":[{\"bool\":{\"filter\":{\"term\":{\"messageTemplate.keyword\":\"Invoke({start_timestamp},{tracer_id},{full_method},{method},{parameters},{return_value},{performance},{error})\"}}}}{#MethodName}]}},\"sort\":[{\"fields.start_timestamp\":{\"order\":\"DESC\"}}]}";
+            var data = "{\"from\":" + from + ",\"size\":" + model.Size + ",\"query\":{\"bool\":{\"filter\":[{\"bool\":{\"filter\":{\"term\":{\"messageTemplate.keyword\":\"Invoke({start_timestamp},{tracer_id},{full_method},{method},{parameters},{return_value},{performance},{error})\"}}}}{#OnlyError}]}},\"sort\":[{\"fields.start_timestamp\":{\"order\":\"DESC\"}}]}";
 
+            if (model.Form.OnlyError)
+            {
+                data = data.Replace("{#OnlyError}",
+                   ",{\"bool\":{\"filter\":{\"term\":{\"level.keyword\":\"Error\"}}}}{#MethodName}");
+            }
+            else
+            {
+                data = data.Replace("{#OnlyError}", "{#MethodName}");
+            }
             if (!string.IsNullOrWhiteSpace(model.Form.MethodName))
             {
                 data = data.Replace("{#MethodName}",
